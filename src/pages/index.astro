@@ -1,17 +1,597 @@
 ---
+import Base from "../layouts/Base.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import CertCard from "../components/CertCard.astro";
+import { getCollection } from "astro:content";
 
+const allProjects = await getCollection("projects");
+const projects = allProjects.sort((a, b) =>
+  b.data.date.getTime() - a.data.date.getTime()
+);
+
+const allCerts = await getCollection("certifications");
+const certs = allCerts.sort((a, b) =>
+  b.data.date.getTime() - a.data.date.getTime()
+);
+
+const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Thinker", "Lifelong Learner"];
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<Base title="Harish — Full-Stack Developer" description="I build thoughtful software. Currently exploring distributed systems, developer tooling, and the edges of the web platform.">
+
+  <!-- ═══════════════════════════════════════════════════════ HERO -->
+  <section class="hero" aria-label="Introduction">
+    <div class="container hero-inner">
+
+      <div class="hero-tag">
+        <span class="tag-dot"></span>
+        Available for opportunities
+      </div>
+
+      <h1 class="hero-headline">
+        I build software<br/>
+        <em>people remember.</em>
+      </h1>
+
+      <p class="hero-bio">
+        Full-stack developer with a bias toward clean APIs, fast UIs, and
+        things that actually ship. Based in Kerala — building globally.
+      </p>
+
+      <div class="hero-ctas">
+        <a href="#projects" class="cta-primary">View Projects</a>
+        <a href="/resume.pdf" class="cta-secondary" target="_blank" rel="noopener">
+          Download Résumé
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Typewriter roles -->
+      <div class="hero-roles" aria-hidden="true">
+        <span class="roles-prefix">→</span>
+        <span id="typewriter" class="roles-text"></span>
+        <span class="cursor">_</span>
+      </div>
+
+      <!-- Tech stack badges -->
+      <div class="stack-row" aria-label="Tech stack">
+        {["TypeScript", "React", "Astro", "Node.js", "PostgreSQL", "Docker"].map(t => (
+          <span class="stack-badge">{t}</span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Background grid -->
+    <div class="hero-grid" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ PROJECTS -->
+  <section id="projects" class="section" aria-labelledby="projects-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Selected work</div>
+        <h2 id="projects-heading" class="section-title">Projects</h2>
+        <p class="section-desc">
+          Things I've built — from side experiments to production systems.
+          Hover a card to see what I took away from each.
+        </p>
+      </header>
+
+      <div class="projects-grid">
+        {projects.map((p) => (
+          <ProjectCard
+            title={p.data.title}
+            description={p.data.description}
+            tech={p.data.tech}
+            liveUrl={p.data.liveUrl}
+            repoUrl={p.data.repoUrl}
+            learnings={p.data.learnings}
+            slug={p.id}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ CERTIFICATIONS -->
+  <section id="certifications" class="section" aria-labelledby="certs-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Credentials</div>
+        <h2 id="certs-heading" class="section-title">Certifications</h2>
+        <p class="section-desc">
+          Formal validation of things I've spent time learning properly.
+        </p>
+      </header>
+
+      <div class="certs-grid">
+        {certs.map((c) => (
+          <CertCard
+            name={c.data.name}
+            issuer={c.data.issuer}
+            date={c.data.date}
+            verifyUrl={c.data.verifyUrl}
+            badge={c.data.badge}
+            description={c.data.description}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ BLOG TEASER -->
+  {recentPosts.length > 0 && (
+    <section id="writing" class="section" aria-labelledby="blog-heading">
+      <div class="container">
+        <header class="section-header">
+          <div class="section-label">Writing</div>
+          <h2 id="blog-heading" class="section-title">Recent Posts</h2>
+          <p class="section-desc">
+            Notes on things I've figured out, and things I'm still figuring out.
+          </p>
+        </header>
+
+        <ul class="blog-list" role="list">
+          {recentPosts.map((post) => (
+            <li>
+              <a href={`/blog/${post.id}`} class="blog-row">
+                <span class="blog-row-title">{post.data.title}</span>
+                <span class="blog-row-date">
+                  {post.data.pubDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                </span>
+                <svg class="blog-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <a href="/blog" class="all-posts-link">
+          All posts
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══════════════════════════════════════════════════════ CONTACT -->
+  <section id="contact" class="section section-contact" aria-labelledby="contact-heading">
+    <div class="container">
+      <div class="contact-inner">
+        <header class="section-header contact-header">
+          <div class="section-label">Get in touch</div>
+          <h2 id="contact-heading" class="section-title">Say hello.</h2>
+          <p class="section-desc">
+            Open to full-time roles, contract work, and interesting conversations.
+            Response time: usually within a day.
+          </p>
+        </header>
+
+        <!--
+          Replace action URL with your Formspree endpoint:
+          https://formspree.io → create form → copy the action URL
+        -->
+        <form
+          action="https://formspree.io/f/YOUR_FORM_ID"
+          method="POST"
+          class="contact-form"
+        >
+          <div class="form-row">
+            <div class="form-field">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" required />
+            </div>
+            <div class="form-field">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            </div>
+          </div>
+          <div class="form-field">
+            <label for="message">Message</label>
+            <textarea id="message" name="message" rows="5" placeholder="What's on your mind?" required></textarea>
+          </div>
+          <button type="submit" class="form-submit">
+            Send message
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<!-- ─── Typewriter script ──────────────────────────────────────────────────── -->
+<script>
+  const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Thinker", "Lifelong Learner"];
+  const el = document.getElementById("typewriter");
+  if (el) {
+    let roleIdx = 0, charIdx = 0, deleting = false;
+    const tick = () => {
+      const current = roles[roleIdx];
+      if (!deleting) {
+        el.textContent = current.slice(0, ++charIdx);
+        if (charIdx === current.length) {
+          deleting = true;
+          setTimeout(tick, 2200);
+          return;
+        }
+      } else {
+        el.textContent = current.slice(0, --charIdx);
+        if (charIdx === 0) {
+          deleting = false;
+          roleIdx = (roleIdx + 1) % roles.length;
+        }
+      }
+      setTimeout(tick, deleting ? 40 : 80);
+    };
+    setTimeout(tick, 800);
+  }
+</script>
+
+<style>
+  /* ── Hero ─────────────────────────────────────────────────────────────────── */
+  .hero {
+    position: relative;
+    padding-top: clamp(4rem, 12vw, 8rem);
+    padding-bottom: clamp(4rem, 10vw, 7rem);
+    overflow: hidden;
+  }
+
+  /* Subtle dot-grid background */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.5;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 52rem;
+  }
+
+  /* Availability tag */
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3em 0.9em;
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s var(--ease-out) both;
+  }
+  .tag-dot {
+    width: 7px;
+    height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #4ade8030;
+    animation: pulse-dot 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 2px #4ade8030; }
+    50%       { box-shadow: 0 0 0 5px #4ade8010; }
+  }
+
+  /* Headline */
+  .hero-headline {
+    font-family: var(--font-serif);
+    font-size: clamp(2.75rem, 7vw, 5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: var(--space-6);
+    animation: fade-up 0.6s 0.1s var(--ease-out) both;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-bio {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 42ch;
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s 0.2s var(--ease-out) both;
+  }
+
+  /* CTAs */
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-10);
+    animation: fade-up 0.6s 0.3s var(--ease-out) both;
+  }
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.65em 1.5em;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    transition: opacity var(--duration), transform var(--duration);
+  }
+  .cta-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding: 0.65em 1.5em;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: border-color var(--duration), color var(--duration),
+                transform var(--duration);
+  }
+  .cta-secondary:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+
+  /* Typewriter */
+  .hero-roles {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-faint);
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s 0.4s var(--ease-out) both;
+    min-height: 1.5em;
+  }
+  .roles-prefix { color: var(--accent); }
+  .cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Stack badges */
+  .stack-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    animation: fade-up 0.6s 0.5s var(--ease-out) both;
+  }
+  .stack-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.3em 0.7em;
+    transition: color var(--duration), border-color var(--duration);
+  }
+  .stack-badge:hover {
+    color: var(--text-muted);
+    border-color: var(--text-faint);
+  }
+
+  /* ── Sections ─────────────────────────────────────────────────────────────── */
+  .section {
+    padding-block: clamp(4rem, 8vw, 6rem);
+  }
+
+  /* Alternate section bg for visual rhythm */
+  .section:nth-of-type(even) {
+    background: var(--bg-raised);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-12);
+    max-width: 42ch;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .section-desc {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── Projects grid ────────────────────────────────────────────────────────── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  /* ── Certs grid ───────────────────────────────────────────────────────────── */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  /* ── Blog teaser ──────────────────────────────────────────────────────────── */
+  .blog-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+    margin-bottom: var(--space-8);
+  }
+
+  .blog-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+    border-bottom: 1px solid var(--border);
+    transition: none;
+  }
+
+  .blog-row-title {
+    flex: 1;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    transition: color var(--duration);
+  }
+  .blog-row:hover .blog-row-title { color: var(--text); }
+
+  .blog-row-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+
+  .blog-row-arrow {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transform: translateX(0);
+    transition: transform 200ms var(--ease-out), color 200ms;
+  }
+  .blog-row:hover .blog-row-arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+
+  .all-posts-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color var(--duration);
+  }
+  .all-posts-link:hover { color: var(--accent); }
+  .all-posts-link svg {
+    transition: transform 200ms var(--ease-out);
+  }
+  .all-posts-link:hover svg { transform: translateX(3px); }
+
+  /* ── Contact ──────────────────────────────────────────────────────────────── */
+  .section-contact {
+    background: var(--bg-raised);
+  }
+
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: var(--space-16);
+    align-items: start;
+  }
+
+  .contact-header { max-width: none; margin-bottom: 0; }
+
+  .contact-form {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .form-field {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .form-field label {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+  }
+
+  .form-field input,
+  .form-field textarea {
+    font-family: var(--font-sans);
+    font-size: 0.9375rem;
+    color: var(--text);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 0.65em 1em;
+    outline: none;
+    resize: vertical;
+    transition: border-color var(--duration);
+  }
+  .form-field input::placeholder,
+  .form-field textarea::placeholder { color: var(--text-faint); }
+  .form-field input:focus,
+  .form-field textarea:focus { border-color: var(--accent); }
+
+  .form-submit {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-3);
+    align-self: flex-start;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.7em 1.75em;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    transition: opacity var(--duration), transform var(--duration);
+  }
+  .form-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  /* ── Animations ───────────────────────────────────────────────────────────── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── Responsive ───────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .contact-inner { grid-template-columns: 1fr; gap: var(--space-10); }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>

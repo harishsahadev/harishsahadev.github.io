@@ -1,0 +1,224 @@
+---
+import Base from "./Base.astro";
+
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  updatedDate?: Date;
+  tags: string[];
+  readingTime?: number;
+  cover?: string;
+  coverAlt?: string;
+}
+
+const { title, description, pubDate, updatedDate, tags, readingTime, cover, coverAlt } =
+  Astro.props;
+
+const formattedPub = pubDate.toLocaleDateString("en-US", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+
+const formattedUpd = updatedDate?.toLocaleDateString("en-US", {
+  day: "numeric",
+  month: "long",
+  year: "numeric",
+});
+---
+
+<Base title={title} description={description} article>
+  <!-- Reading progress bar -->
+  <div id="reading-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} aria-label="Reading progress"></div>
+
+  <div class="post-wrapper container">
+    <article class="post">
+      <!-- Header -->
+      <header class="post-header">
+        <div class="post-meta">
+          <time datetime={pubDate.toISOString()}>{formattedPub}</time>
+          {readingTime && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>{readingTime} min read</span>
+            </>
+          )}
+          {updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span class="updated">Updated <time datetime={updatedDate.toISOString()}>{formattedUpd}</time></span>
+            </>
+          )}
+        </div>
+
+        <h1 class="post-title">{title}</h1>
+        <p class="post-desc">{description}</p>
+
+        {tags.length > 0 && (
+          <ul class="post-tags" role="list">
+            {tags.map((tag) => (
+              <li class="post-tag">#{tag}</li>
+            ))}
+          </ul>
+        )}
+      </header>
+
+      {cover && (
+        <div class="post-cover">
+          <img src={cover} alt={coverAlt ?? ""} loading="eager" />
+        </div>
+      )}
+
+      <!-- MDX body injected here -->
+      <div class="prose">
+        <slot />
+      </div>
+    </article>
+
+    <!-- Giscus comments -->
+    <section class="comments" aria-label="Comments">
+      <h2 class="comments-heading">Discussion</h2>
+      <!--
+        Replace the data-* attributes with your own Giscus config.
+        Get them from https://giscus.app
+      -->
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo="yourusername/yourrepo"
+        data-repo-id="YOUR_REPO_ID"
+        data-category="Announcements"
+        data-category-id="YOUR_CATEGORY_ID"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="top"
+        data-theme="transparent_dark"
+        data-lang="en"
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      ></script>
+    </section>
+  </div>
+</Base>
+
+<!-- Reading progress bar logic -->
+<script>
+  const bar = document.getElementById("reading-progress");
+  const article = document.querySelector(".prose");
+
+  if (bar && article) {
+    const update = () => {
+      const { top, height } = article.getBoundingClientRect();
+      const scrolled = Math.max(0, -top);
+      const total = height - window.innerHeight;
+      const pct = total > 0 ? Math.min(100, (scrolled / total) * 100) : 0;
+      bar.style.setProperty("--progress", `${pct}%`);
+      bar.setAttribute("aria-valuenow", String(Math.round(pct)));
+    };
+
+    window.addEventListener("scroll", update, { passive: true });
+    update();
+  }
+</script>
+
+<style>
+  /* ─── Progress bar ────────────────────────────────────────────────────────── */
+  #reading-progress {
+    --progress: 0%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    height: 2px;
+    width: var(--progress);
+    background: var(--accent);
+    transition: width 100ms linear;
+    pointer-events: none;
+  }
+
+  /* ─── Layout ──────────────────────────────────────────────────────────────── */
+  .post-wrapper {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-24);
+  }
+
+  .post {
+    max-width: var(--prose-width);
+    margin-inline: auto;
+  }
+
+  /* ─── Header ─────────────────────────────────────────────────────────────── */
+  .post-header {
+    margin-bottom: var(--space-12);
+  }
+  .post-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    margin-bottom: var(--space-4);
+  }
+  .updated { font-style: italic; }
+
+  .post-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .post-desc {
+    font-size: 1.0625rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+  }
+
+  .post-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+  .post-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+  }
+
+  /* ─── Cover image ─────────────────────────────────────────────────────────── */
+  .post-cover {
+    margin-bottom: var(--space-12);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .post-cover img {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+
+  /* ─── Comments ────────────────────────────────────────────────────────────── */
+  .comments {
+    max-width: var(--prose-width);
+    margin-inline: auto;
+    margin-top: var(--space-24);
+    padding-top: var(--space-12);
+    border-top: 1px solid var(--border);
+  }
+  .comments-heading {
+    font-family: var(--font-serif);
+    font-size: 1.375rem;
+    margin-bottom: var(--space-8);
+    color: var(--text);
+  }
+</style>

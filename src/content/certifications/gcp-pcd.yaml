@@ -1,0 +1,6 @@
+name: "Professional Cloud Developer"
+issuer: "Google Cloud"
+date: "2024-09-15"
+verifyUrl: "https://www.credly.com/badges/your-badge-id-2"
+badge: "/images/certs/gcp-pcd.png"
+description: "Building scalable applications on GCP — Cloud Run, Pub/Sub, Spanner, and GKE."
