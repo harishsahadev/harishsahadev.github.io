@@ -19,6 +19,8 @@ const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
   .slice(0, 3);
 
 const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Thinker", "Lifelong Learner"];
+const hasRecentPosts = recentPosts.length > 0;
+const contactSectionClass = hasRecentPosts ? "section section-alt section-contact" : "section section-contact";
 ---
 
 <Base title="Harish — Full-Stack Developer" description="I build thoughtful software. Currently exploring distributed systems, developer tooling, and the edges of the web platform.">
@@ -100,7 +102,7 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
   </section>
 
   <!-- ═══════════════════════════════════════════════════════ CERTIFICATIONS -->
-  <section id="certifications" class="section" aria-labelledby="certs-heading">
+  <section id="certifications" class="section section-alt" aria-labelledby="certs-heading">
     <div class="container">
       <header class="section-header">
         <div class="section-label">Credentials</div>
@@ -126,7 +128,7 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
   </section>
 
   <!-- ═══════════════════════════════════════════════════════ BLOG TEASER -->
-  {recentPosts.length > 0 && (
+  {hasRecentPosts && (
     <section id="writing" class="section" aria-labelledby="blog-heading">
       <div class="container">
         <header class="section-header">
@@ -164,7 +166,7 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
   )}
 
   <!-- ═══════════════════════════════════════════════════════ CONTACT -->
-  <section id="contact" class="section section-contact" aria-labelledby="contact-heading">
+  <section id="contact" class={contactSectionClass} aria-labelledby="contact-heading">
     <div class="container">
       <div class="contact-inner">
         <header class="section-header contact-header">
@@ -172,40 +174,60 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
           <h2 id="contact-heading" class="section-title">Say hello.</h2>
           <p class="section-desc">
             Open to full-time roles, contract work, and interesting conversations.
-            Response time: usually within a day.
+            Pick your preferred channel.
           </p>
         </header>
 
-        <!--
-          Replace action URL with your Formspree endpoint:
-          https://formspree.io → create form → copy the action URL
-        -->
-        <form
-          action="https://formspree.io/f/YOUR_FORM_ID"
-          method="POST"
-          class="contact-form"
-        >
-          <div class="form-row">
-            <div class="form-field">
-              <label for="name">Name</label>
-              <input type="text" id="name" name="name" placeholder="Your name" required />
-            </div>
-            <div class="form-field">
-              <label for="email">Email</label>
-              <input type="email" id="email" name="email" placeholder="you@example.com" required />
-            </div>
-          </div>
-          <div class="form-field">
-            <label for="message">Message</label>
-            <textarea id="message" name="message" rows="5" placeholder="What's on your mind?" required></textarea>
-          </div>
-          <button type="submit" class="form-submit">
-            Send message
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <line x1="22" x2="11" y1="2" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
-            </svg>
-          </button>
-        </form>
+        <ul class="social-links" role="list">
+          <li>
+            <a href="mailto:you@example.com" class="social-row">
+              <span class="social-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              </span>
+              <span class="social-info">
+                <span class="social-name">Email</span>
+                <span class="social-handle">you@example.com</span>
+              </span>
+              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
+              <span class="social-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+              </span>
+              <span class="social-info">
+                <span class="social-name">GitHub</span>
+                <span class="social-handle">@yourusername</span>
+              </span>
+              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
+              <span class="social-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+              </span>
+              <span class="social-info">
+                <span class="social-name">LinkedIn</span>
+                <span class="social-handle">Harish Kumar</span>
+              </span>
+              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </li>
+          <li>
+            <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
+              <span class="social-icon">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              </span>
+              <span class="social-info">
+                <span class="social-name">X / Twitter</span>
+                <span class="social-handle">@yourusername</span>
+              </span>
+              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </a>
+          </li>
+        </ul>
       </div>
     </div>
   </section>
@@ -407,8 +429,8 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
     padding-block: clamp(4rem, 8vw, 6rem);
   }
 
-  /* Alternate section bg for visual rhythm */
-  .section:nth-of-type(even) {
+  /* Explicit section variant so conditional sections do not break rhythm */
+  .section-alt {
     background: var(--bg-raised);
   }
 
@@ -512,76 +534,83 @@ const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Think
   .all-posts-link:hover svg { transform: translateX(3px); }
 
   /* ── Contact ──────────────────────────────────────────────────────────────── */
-  .section-contact {
-    background: var(--bg-raised);
-  }
-
   .contact-inner {
     display: grid;
-    grid-template-columns: 1fr 1.4fr;
+    grid-template-columns: 1fr 1.2fr;
     gap: var(--space-16);
     align-items: start;
   }
-
   .contact-header { max-width: none; margin-bottom: 0; }
 
-  .contact-form {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-4);
-  }
-
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: var(--space-4);
-  }
-
-  .form-field {
+  .social-links {
+    list-style: none;
     display: flex;
     flex-direction: column;
     gap: var(--space-2);
   }
 
-  .form-field label {
-    font-size: 0.8125rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    letter-spacing: 0.01em;
-  }
-
-  .form-field input,
-  .form-field textarea {
-    font-family: var(--font-sans);
-    font-size: 0.9375rem;
-    color: var(--text);
+  .social-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-4) var(--space-5);
     background: var(--bg-card);
     border: 1px solid var(--border);
     border-radius: var(--radius-md);
-    padding: 0.65em 1em;
-    outline: none;
-    resize: vertical;
-    transition: border-color var(--duration);
+    transition: border-color var(--duration), transform 250ms var(--ease-out);
   }
-  .form-field input::placeholder,
-  .form-field textarea::placeholder { color: var(--text-faint); }
-  .form-field input:focus,
-  .form-field textarea:focus { border-color: var(--accent); }
+  .social-row:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
 
-  .form-submit {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--space-3);
-    align-self: flex-start;
-    font-size: 0.9375rem;
-    font-weight: 600;
-    padding: 0.7em 1.75em;
-    background: var(--accent);
-    color: #fff;
+  .social-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
     border-radius: var(--radius-sm);
-    transition: opacity var(--duration), transform var(--duration);
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: color var(--duration), border-color var(--duration);
   }
-  .form-submit:hover { opacity: 0.88; transform: translateY(-1px); }
+  .social-row:hover .social-icon {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .social-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+  .social-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .social-handle {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+
+  .social-arrow {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: transform 200ms var(--ease-out), color 200ms;
+  }
+  .social-row:hover .social-arrow {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+
+  @media (max-width: 768px) {
+    .contact-inner { grid-template-columns: 1fr; gap: var(--space-10); }
+  }
 
   /* ── Animations ───────────────────────────────────────────────────────────── */
   @keyframes fade-up {
