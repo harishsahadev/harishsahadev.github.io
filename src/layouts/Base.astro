@@ -1,5 +1,6 @@
 ---
 import "../styles/global.css";
+import { SITE } from "../config/site";
 
 interface Props {
   title: string;
@@ -12,13 +13,14 @@ interface Props {
 
 const {
   title,
-  description = "Full-stack developer building thoughtful software.",
+  description = SITE.description,
   ogImage = "/og-default.png",
   article = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const siteTitle = "Your Name"; // ← update this
+const siteTitle = SITE.title;
+const logoMark = `${SITE.firstName[0] ?? ""}${SITE.lastName[0] ?? ""}`.toUpperCase();
 ---
 
 <!doctype html>
@@ -66,8 +68,7 @@ const siteTitle = "Your Name"; // ← update this
     <header id="site-header">
       <nav class="container nav-inner">
         <a href="/" class="nav-logo" aria-label="Home">
-          <!-- Replace with your logo/monogram -->
-          <span class="logo-mark">YN</span>
+          <span class="logo-mark">{logoMark}</span>
         </a>
 
         <ul class="nav-links" role="list">
@@ -94,7 +95,7 @@ const siteTitle = "Your Name"; // ← update this
             </svg>
           </button>
 
-          <a href="/resume.pdf" class="btn-resume" target="_blank" rel="noopener">
+          <a href={SITE.resumeUrl} class="btn-resume" target="_blank" rel="noopener">
             Résumé
           </a>
         </div>
@@ -112,11 +113,11 @@ const siteTitle = "Your Name"; // ← update this
         <p class="footer-copy">
           © {new Date().getFullYear()} {siteTitle}
           <span class="sep" aria-hidden="true">·</span>
-          Built with <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>
+          Built with <a href="https://astro.build" target="_blank" rel="noopener">{SITE.builtWith}</a>
         </p>
         <ul class="footer-links" role="list">
-          <li><a href="https://github.com/yourusername" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a></li>
-          <li><a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a></li>
+          {SITE.social.github && <li><a href={SITE.social.github} target="_blank" rel="noopener" aria-label="GitHub">GitHub</a></li>}
+          {SITE.social.linkedin && <li><a href={SITE.social.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a></li>}
           <li><a href="/rss.xml" aria-label="RSS feed">RSS</a></li>
         </ul>
       </div>

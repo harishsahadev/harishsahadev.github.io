@@ -1,5 +1,6 @@
 ---
 import Base from "./Base.astro";
+import { SITE } from "../config/site";
 
 interface Props {
   title: string;
@@ -26,6 +27,12 @@ const formattedUpd = updatedDate?.toLocaleDateString("en-US", {
   month: "long",
   year: "numeric",
 });
+
+const hasGiscus =
+  SITE.giscus.repo &&
+  SITE.giscus.repoId &&
+  SITE.giscus.category &&
+  SITE.giscus.categoryId;
 ---
 
 <Base title={title} description={description} article>
@@ -77,31 +84,29 @@ const formattedUpd = updatedDate?.toLocaleDateString("en-US", {
     </article>
 
     <!-- Giscus comments -->
-    <section class="comments" aria-label="Comments">
-      <h2 class="comments-heading">Discussion</h2>
-      <!--
-        Replace the data-* attributes with your own Giscus config.
-        Get them from https://giscus.app
-      -->
-      <script
-        is:inline
-        src="https://giscus.app/client.js"
-        data-repo="yourusername/yourrepo"
-        data-repo-id="YOUR_REPO_ID"
-        data-category="Announcements"
-        data-category-id="YOUR_CATEGORY_ID"
-        data-mapping="pathname"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="top"
-        data-theme="transparent_dark"
-        data-lang="en"
-        data-loading="lazy"
-        crossorigin="anonymous"
-        async
-      ></script>
-    </section>
+    {hasGiscus && (
+      <section class="comments" aria-label="Comments">
+        <h2 class="comments-heading">Discussion</h2>
+        <script
+          is:inline
+          src="https://giscus.app/client.js"
+          data-repo={SITE.giscus.repo}
+          data-repo-id={SITE.giscus.repoId}
+          data-category={SITE.giscus.category}
+          data-category-id={SITE.giscus.categoryId}
+          data-mapping="pathname"
+          data-strict="0"
+          data-reactions-enabled="1"
+          data-emit-metadata="0"
+          data-input-position="top"
+          data-theme="transparent_dark"
+          data-lang="en"
+          data-loading="lazy"
+          crossorigin="anonymous"
+          async
+        ></script>
+      </section>
+    )}
   </div>
 </Base>
 

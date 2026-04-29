@@ -3,6 +3,7 @@ import Base from "../layouts/Base.astro";
 import ProjectCard from "../components/ProjectCard.astro";
 import CertCard from "../components/CertCard.astro";
 import { getCollection } from "astro:content";
+import { SITE } from "../config/site";
 
 const allProjects = await getCollection("projects");
 const projects = allProjects.sort((a, b) =>
@@ -18,35 +19,40 @@ const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
   .slice(0, 3);
 
-const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Thinker", "Lifelong Learner"];
+const roles = SITE.roles;
 const hasRecentPosts = recentPosts.length > 0;
 const contactSectionClass = hasRecentPosts ? "section section-alt section-contact" : "section section-contact";
+
+function resolveProjectRepoUrl(repoUrl?: string) {
+  if (!repoUrl) return undefined;
+
+  return repoUrl.replace("https://github.com/yourusername/", `https://github.com/${SITE.social.githubUsername}/`);
+}
 ---
 
-<Base title="Harish — Full-Stack Developer" description="I build thoughtful software. Currently exploring distributed systems, developer tooling, and the edges of the web platform.">
+<Base title={SITE.title} description={SITE.description}>
 
   <!-- ═══════════════════════════════════════════════════════ HERO -->
   <section class="hero" aria-label="Introduction">
     <div class="container hero-inner">
 
-      <div class="hero-tag">
-        <span class="tag-dot"></span>
-        Available for opportunities
-      </div>
+      {SITE.availableForWork && (
+        <div class="hero-tag">
+          <span class="tag-dot"></span>
+          Available for opportunities
+        </div>
+      )}
 
       <h1 class="hero-headline">
-        I build software<br/>
-        <em>people remember.</em>
+        {SITE.tagline.split(" people ")[0]}<br/>
+        <em>people {SITE.tagline.split(" people ")[1] ?? "remember."}</em>
       </h1>
 
-      <p class="hero-bio">
-        Full-stack developer with a bias toward clean APIs, fast UIs, and
-        things that actually ship. Based in Kerala — building globally.
-      </p>
+      <p class="hero-bio">{SITE.bio}</p>
 
       <div class="hero-ctas">
         <a href="#projects" class="cta-primary">View Projects</a>
-        <a href="/resume.pdf" class="cta-secondary" target="_blank" rel="noopener">
+        <a href={SITE.resumeUrl} class="cta-secondary" target="_blank" rel="noopener">
           Download Résumé
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
@@ -63,7 +69,7 @@ const contactSectionClass = hasRecentPosts ? "section section-alt section-contac
 
       <!-- Tech stack badges -->
       <div class="stack-row" aria-label="Tech stack">
-        {["TypeScript", "React", "Astro", "Node.js", "PostgreSQL", "Docker"].map(t => (
+        {SITE.stack.map((t) => (
           <span class="stack-badge">{t}</span>
         ))}
       </div>
@@ -92,7 +98,7 @@ const contactSectionClass = hasRecentPosts ? "section section-alt section-contac
             description={p.data.description}
             tech={p.data.tech}
             liveUrl={p.data.liveUrl}
-            repoUrl={p.data.repoUrl}
+            repoUrl={resolveProjectRepoUrl(p.data.repoUrl)}
             learnings={p.data.learnings}
             slug={p.id}
           />
@@ -179,54 +185,62 @@ const contactSectionClass = hasRecentPosts ? "section section-alt section-contac
         </header>
 
         <ul class="social-links" role="list">
-          <li>
-            <a href="mailto:you@example.com" class="social-row">
-              <span class="social-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-              </span>
-              <span class="social-info">
-                <span class="social-name">Email</span>
-                <span class="social-handle">you@example.com</span>
-              </span>
-              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </li>
-          <li>
-            <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
-              <span class="social-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
-              </span>
-              <span class="social-info">
-                <span class="social-name">GitHub</span>
-                <span class="social-handle">@yourusername</span>
-              </span>
-              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </li>
-          <li>
-            <a href="https://linkedin.com/in/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
-              <span class="social-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
-              </span>
-              <span class="social-info">
-                <span class="social-name">LinkedIn</span>
-                <span class="social-handle">Harish Kumar</span>
-              </span>
-              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </li>
-          <li>
-            <a href="https://twitter.com/yourusername" target="_blank" rel="noopener noreferrer" class="social-row">
-              <span class="social-icon">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-              </span>
-              <span class="social-info">
-                <span class="social-name">X / Twitter</span>
-                <span class="social-handle">@yourusername</span>
-              </span>
-              <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-            </a>
-          </li>
+          {SITE.social.email && (
+            <li>
+              <a href={`mailto:${SITE.social.email}`} class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">Email</span>
+                  <span class="social-handle">{SITE.social.email}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.github && (
+            <li>
+              <a href={SITE.social.github} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">GitHub</span>
+                  <span class="social-handle">{SITE.social.githubHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.linkedin && (
+            <li>
+              <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">LinkedIn</span>
+                  <span class="social-handle">{SITE.social.linkedinName}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.twitter && (
+            <li>
+              <a href={SITE.social.twitter} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">X / Twitter</span>
+                  <span class="social-handle">{SITE.social.twitterHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
         </ul>
       </div>
     </div>
@@ -235,8 +249,7 @@ const contactSectionClass = hasRecentPosts ? "section section-alt section-contac
 </Base>
 
 <!-- ─── Typewriter script ──────────────────────────────────────────────────── -->
-<script>
-  const roles = ["Full-Stack Developer", "Open Source Contributor", "Systems Thinker", "Lifelong Learner"];
+<script define:vars={{ roles }}>
   const el = document.getElementById("typewriter");
   if (el) {
     let roleIdx = 0, charIdx = 0, deleting = false;
