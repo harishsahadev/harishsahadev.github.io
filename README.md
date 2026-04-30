@@ -1,6 +1,6 @@
 # Portfolio Website
 
-[![Build status](https://img.shields.io/badge/build-passing-brightgreen)](#)
+[![Deploy Astro Site](https://github.com/harishsahadev/harishsahadev.github.io/actions/workflows/deploy.yaml/badge.svg)](https://github.com/harishsahadev/harishsahadev.github.io/actions/workflows/deploy.yaml)
 [![Pages](https://img.shields.io/github/deployments/harishsahadev/harishsahadev.github.io/github-pages?label=pages&logo=github)](https://harishsahadev.github.io)
 
 A compact Astro portfolio site with projects, certifications, blog posts, experience highlights, and dynamic RSS/sitemap support.
