@@ -135,7 +135,8 @@ const logoMark = `${SITE.firstName[0] ?? ""}${SITE.lastName[0] ?? ""}`.toUpperCa
         <ul class="footer-links" role="list">
           {SITE.social.github && <li><a href={SITE.social.github} target="_blank" rel="noopener" aria-label="GitHub">GitHub</a></li>}
           {SITE.social.linkedin && <li><a href={SITE.social.linkedin} target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a></li>}
-          <li><a href="/rss.xml" aria-label="RSS feed">RSS</a></li>
+          <li><a href="/rss.xml" target="_blank" rel="noopener noreferrer" aria-label="RSS feed">RSS</a></li>
+          <li><a href="/sitemap.xml" target="_blank" rel="noopener noreferrer" aria-label="Sitemap">Sitemap</a></li>
         </ul>
       </div>
     </footer>
