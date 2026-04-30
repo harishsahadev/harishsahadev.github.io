@@ -7,9 +7,10 @@ interface Props {
   repoUrl?: string;
   learnings?: string;
   slug?: string;
+  showKnowMore?: boolean;
 }
 
-const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
+const { title, description, tech, liveUrl, repoUrl, learnings, slug, showKnowMore = false } = Astro.props;
 ---
 
 <article class="project-card">
@@ -50,6 +51,15 @@ const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
       </div>
     )}
   </div>
+
+  {showKnowMore && slug && (
+    <a href={`/projects/${slug}`} class="know-more-link">
+      Know more
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </a>
+  )}
 </article>
 
 <style>
@@ -59,6 +69,9 @@ const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
     border-radius: var(--radius-lg);
     padding: var(--space-6);
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
     transition: border-color var(--duration) var(--ease-out),
                 transform 300ms var(--ease-out);
   }
@@ -73,7 +86,6 @@ const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--space-4);
-    margin-bottom: var(--space-4);
     /* Ensure clicks on links always work regardless of body state */
     position: relative;
     z-index: 2;
@@ -110,6 +122,7 @@ const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
   .card-body {
     position: relative;
     min-height: 7rem;
+    flex: 1;
   }
 
   .card-default,
@@ -178,5 +191,24 @@ const { title, description, tech, liveUrl, repoUrl, learnings } = Astro.props;
     font-size: 0.9375rem;
     color: var(--text);
     line-height: 1.65;
+  }
+
+  .know-more-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    width: fit-content;
+    margin-top: auto;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .know-more-link svg {
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  .know-more-link:hover svg {
+    transform: translateX(2px);
   }
 </style>

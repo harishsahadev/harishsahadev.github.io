@@ -18,17 +18,19 @@ const blog = defineCollection({
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
 const projects = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/projects" }),
+  loader: glob({ pattern: "**/*.mdx", base: "./src/content/projects" }),
   schema: z.object({
     title: z.string(),
     description: z.string(),
     tech: z.array(z.string()),
     date: z.coerce.date(),
-    liveUrl: z.string().url().optional(),
-    repoUrl: z.string().url().optional(),
+    liveUrl: z.union([z.string().url(), z.literal("")]).optional(),
+    repoUrl: z.union([z.string().url(), z.literal("")]).optional(),
     image: z.string().optional(),
     imageAlt: z.string().optional(),
+    youtubeUrl: z.union([z.string().url(), z.literal("")]).optional(),
     featured: z.boolean().default(false),
+    order: z.number().int().positive().optional(),
     learnings: z.string().optional(),
   }),
 });

@@ -7,11 +7,11 @@
 export const SITE = {
   // Personal
   firstName: "Harish",
-  lastName: "Kumar",
+  lastName: "Sahadev M",
   get fullName() { return `${this.firstName} ${this.lastName}`; },
 
   // Used in <title> and meta tags
-  title: "Harish Kumar — Full-Stack Developer",
+  title: "Harish Sahadev — Full-Stack Developer",
   description:
     "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in Kerala — building globally.",
 
@@ -26,10 +26,12 @@ export const SITE = {
 
   // Typewriter roles on hero
   roles: [
-    "Full-Stack Developer",
-    "Open Source Contributor",
-    "Systems Thinker",
-    "Lifelong Learner",
+  "Applied AI Engineer",
+  "Full-Stack Developer",
+  "Frontend Lead",
+  "ML Operations Engineer",
+  "System Designer",
+  "Lifelong Learner",
   ],
 
   // Tech stack badges on hero
@@ -41,7 +43,7 @@ export const SITE = {
   // Social links — used in contact section + footer
   // Set a value to "" to hide that link
   social: {
-    email: "you@example.com",
+    email: "harishsahadev@gmail.com",
     githubUsername: "harishsahadev",
     github: "https://github.com/harishsahadev",
     githubHandle: "@harishsahadev",

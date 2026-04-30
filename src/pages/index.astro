@@ -6,9 +6,22 @@ import { getCollection } from "astro:content";
 import { SITE } from "../config/site";
 
 const allProjects = await getCollection("projects");
-const projects = allProjects.sort((a, b) =>
-  b.data.date.getTime() - a.data.date.getTime()
-);
+const projects = allProjects
+  .sort((a, b) => {
+    if (a.data.featured !== b.data.featured) {
+      return Number(b.data.featured) - Number(a.data.featured);
+    }
+
+    if (a.data.order != null && b.data.order != null) {
+      return a.data.order - b.data.order;
+    }
+
+    if (a.data.order != null) return -1;
+    if (b.data.order != null) return 1;
+
+    return b.data.date.getTime() - a.data.date.getTime();
+  })
+  .slice(0, 4);
 
 const allCerts = await getCollection("certifications");
 const certs = allCerts.sort((a, b) =>
@@ -86,8 +99,8 @@ function resolveProjectRepoUrl(repoUrl?: string) {
         <div class="section-label">Selected work</div>
         <h2 id="projects-heading" class="section-title">Projects</h2>
         <p class="section-desc">
-          Things I've built — from side experiments to production systems.
-          Hover a card to see what I took away from each.
+          A focused set of the projects I want front and center.
+          The full projects page goes deeper into the problem, approach, and outcomes.
         </p>
       </header>
 
@@ -101,9 +114,17 @@ function resolveProjectRepoUrl(repoUrl?: string) {
             repoUrl={resolveProjectRepoUrl(p.data.repoUrl)}
             learnings={p.data.learnings}
             slug={p.id}
+            showKnowMore={true}
           />
         ))}
       </div>
+
+      <a href="/projects" class="all-posts-link">
+        All projects
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
   </section>
 
@@ -482,6 +503,24 @@ function resolveProjectRepoUrl(repoUrl?: string) {
     gap: var(--space-4);
   }
 
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .section-link svg {
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  .section-link:hover svg {
+    transform: translateX(2px);
+  }
+
   /* ── Certs grid ───────────────────────────────────────────────────────────── */
   .certs-grid {
     display: grid;
@@ -493,7 +532,6 @@ function resolveProjectRepoUrl(repoUrl?: string) {
   .blog-list {
     list-style: none;
     border-top: 1px solid var(--border);
-    margin-bottom: var(--space-8);
   }
 
   .blog-row {
@@ -535,6 +573,7 @@ function resolveProjectRepoUrl(repoUrl?: string) {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
+    margin-top: var(--space-6);
     font-size: 0.875rem;
     font-weight: 500;
     color: var(--text-muted);
