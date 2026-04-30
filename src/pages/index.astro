@@ -34,7 +34,7 @@ const certs = allCerts.sort((a, b) => {
   if (b.data.order != null) return 1;
 
   return compareContentDatesDesc(a.data.date, b.data.date);
-});
+}).slice(0, 3);
 
 const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -161,6 +161,13 @@ function resolveProjectRepoUrl(repoUrl?: string) {
           />
         ))}
       </div>
+
+      <a href="/certificates" class="all-posts-link">
+        All certificates
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
     </div>
   </section>
 
@@ -535,7 +542,7 @@ function resolveProjectRepoUrl(repoUrl?: string) {
   .certs-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
-    gap: var(--space-4);
+    gap: var(--space-6);
   }
 
   /* ── Blog teaser ──────────────────────────────────────────────────────────── */

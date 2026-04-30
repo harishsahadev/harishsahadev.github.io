@@ -1,0 +1,8 @@
+name: "Diploma in Programming"
+issuer: "Indian Institute of Technology, Madras"
+date: "2023-12-31"
+tags: ["Software Development", "Data Structures", "Algorithms", "Python", "JAVA", "JavaScript", "SQL", "Git", "Bash", "DBMS"]
+verifyUrl: "https://app.onlinedegree.iitm.ac.in/document_verification/c1ed6e5b5fd18cb7609e3b5b391690521a77cfc476b9bdb05ce4ae150b90025a"
+badge: "/images/certs/diploma-programming-iitm.png"
+description: "Diploma credential in programming from IIT Madras BS Degree Program."
+detailedDescription: "Awarded the Diploma in Programming from the IIT Madras BS Degree Program after successfully completing the required coursework and evaluations. The program covers core computer science fundamentals including programming, data structures, algorithms, and problem-solving, forming a strong foundation for advanced computing and software development."

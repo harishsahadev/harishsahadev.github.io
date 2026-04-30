@@ -1,0 +1,8 @@
+name: "Diploma in Data Science"
+issuer: "Indian Institute of Technology, Madras"
+date: "2023-12-31"
+tags: ["Data Science", "Machine Learning", "Statistics", "Business Analytics"]
+verifyUrl: "https://app.onlinedegree.iitm.ac.in/document_verification/b6088e3d916c4edcdac538e3d6c146174cde3e4bf10d17785cf6a951d169a0de"
+badge: "/images/certs/diploma-data-science-iitm.png"
+description: "Diploma credential in data science from IIT Madras BS Degree Program."
+detailedDescription: "Awarded the Diploma in Data Science from the IIT Madras BS Degree Program after successfully completing the required coursework and evaluations. The program covers core concepts in data science including statistics, machine learning, data analysis, and computational methods, providing a strong foundation for data-driven problem solving and AI applications."

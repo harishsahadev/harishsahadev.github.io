@@ -66,7 +66,7 @@ const certifications = defineCollection({
     }),
     order: z.number().int().positive().optional(),
     tags: z.array(z.string()).default([]),
-    verifyUrl: z.string().url().optional(),
+    verifyUrl: z.union([z.string().url(), z.literal("")]).optional(),
     badge: z.string().optional(),
     description: z.string().optional(),
     detailedDescription: z.string().optional(),

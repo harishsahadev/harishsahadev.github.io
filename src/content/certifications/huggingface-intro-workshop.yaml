@@ -1,0 +1,8 @@
+name: "Introduction to HuggingFace and HuggingFace Spaces"
+issuer: "IIT Madras BS Degree Program"
+date: "2026-01-25"
+tags: ["HuggingFace", "NLP", "Transformers", "ML Deployment", "Workshop"]
+verifyUrl: "https://ds.study.iitm.ac.in/document_verification/ddb89b22017796c1212838ea8777c0beac452448343a2fc006720768f70d8dbf"
+badge: "/images/certs/huggingface-intro-workshop.png"
+description: "Workshop introducing HuggingFace ecosystem, including transformers and deployment using HuggingFace Spaces."
+detailedDescription: "This certificate of appreciation recognizes successful completion of the workshop 'Introduction to HuggingFace and HuggingFace Spaces' conducted by the IIT Madras BS Degree Program. The workshop covered the fundamentals of using HuggingFace for natural language processing, working with transformer models, and deploying applications using HuggingFace Spaces. The program was conducted from January 24 to January 25, 2026."

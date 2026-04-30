@@ -1,0 +1,89 @@
+---
+import Base from "../../layouts/Base.astro";
+import CertCard from "../../components/CertCard.astro";
+import { getCollection } from "astro:content";
+import { compareContentDatesDesc } from "../../utils/contentDates";
+
+const certificates = (await getCollection("certifications"))
+  .sort((a, b) => {
+    if (a.data.order != null && b.data.order != null) {
+      return a.data.order - b.data.order;
+    }
+
+    if (a.data.order != null) return -1;
+    if (b.data.order != null) return 1;
+
+    return compareContentDatesDesc(a.data.date, b.data.date);
+  });
+---
+
+<Base title="Certificates" description="Certificates, workshops, and professional credentials.">
+  <section class="certificates-page">
+    <div class="container">
+      <header class="certificates-header">
+        <div class="section-label">Credentials</div>
+        <h1 class="certificates-title">Certificates</h1>
+        <p class="certificates-desc">
+          The full list of certifications, workshop credentials, and validated learning milestones.
+        </p>
+      </header>
+
+      <div class="certs-grid">
+        {certificates.map((certificate) => (
+          <CertCard
+            name={certificate.data.name}
+            issuer={certificate.data.issuer}
+            date={certificate.data.date}
+            tags={certificate.data.tags}
+            verifyUrl={certificate.data.verifyUrl}
+            badge={certificate.data.badge}
+            description={certificate.data.description}
+            detailedDescription={certificate.data.detailedDescription}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .certificates-page {
+    padding-block: var(--space-16) var(--space-24);
+  }
+
+  .certificates-header {
+    max-width: 44rem;
+    margin-bottom: var(--space-12);
+  }
+
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: var(--space-4);
+  }
+
+  .certificates-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    line-height: 1.05;
+    margin-bottom: var(--space-4);
+  }
+
+  .certificates-desc {
+    font-size: 1.0625rem;
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-6);
+  }
+</style>
