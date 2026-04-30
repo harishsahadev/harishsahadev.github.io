@@ -22,4 +22,9 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# codex setting folder
 .codex
+
+# vscode setting folder
+.vscode/
