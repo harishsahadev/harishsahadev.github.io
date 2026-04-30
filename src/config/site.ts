@@ -12,14 +12,14 @@ export const SITE = {
 
   // Used in <title> and meta tags
   title: "Harish Sahadev M — Applied AI & Full-Stack Engineer",
-  description: "Applied AI and full-stack engineer building scalable systems with LLMs, modern web technologies, and cloud infrastructure.",
+  description: "Applied AI and full-stack engineer specializing in LLM systems, cross-platform applications, and scalable cloud infrastructure.",
 
   // The value you set in astro.config.mjs → site: "..."
   url: "https://harishsahadev.github.io",
 
   // Hero section
-  tagline: "I build software people remember.",
-  bio: "I build real-world AI systems across the stack—from model design to deployment—combining LLMs, full-stack development, and scalable infrastructure.",
+  tagline: "Building software people remember.",
+  bio: "End-to-end AI systems across the stack—from model design to deployment—integrating LLMs, full-stack development, and scalable infrastructure.",
   availableForWork: true,
   currentlyLearning: "Distributed systems & Rust",
 
@@ -27,8 +27,8 @@ export const SITE = {
   roles: [
   "Applied AI Engineer",
   "Full-Stack Developer",
-  "Frontend Lead",
-  "ML Operations Engineer",
+  "Cross-Platform Developer",
+  "MLOps Engineer",
   "System Designer",
   "Lifelong Learner",
   ],
