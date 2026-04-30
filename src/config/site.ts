@@ -11,16 +11,15 @@ export const SITE = {
   get fullName() { return `${this.firstName} ${this.lastName}`; },
 
   // Used in <title> and meta tags
-  title: "Harish Sahadev — Full-Stack Developer",
-  description:
-    "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in India — building globally.",
+  title: "Harish Sahadev M — Applied AI & Full-Stack Engineer",
+  description: "Applied AI and full-stack engineer building scalable systems with LLMs, modern web technologies, and cloud infrastructure.",
 
   // The value you set in astro.config.mjs → site: "..."
   url: "https://harishsahadev.github.io",
 
   // Hero section
   tagline: "I build software people remember.",
-  bio: "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in India — building globally.",
+  bio: "I build real-world AI systems across the stack—from model design to deployment—combining LLMs, full-stack development, and scalable infrastructure.",
   availableForWork: true,
   currentlyLearning: "Distributed systems & Rust",
 
@@ -35,10 +34,7 @@ export const SITE = {
   ],
 
   // Tech stack badges on hero
-  stack: ["TypeScript", "React", "Astro", "Node.js", "PostgreSQL", "Docker"],
-
-  // Nav resume link
-  resumeUrl: "/resume.pdf",
+  stack: ["Python", "TypeScript", "FastAPI", "RAG", "LLMs", "React", "Docker", "Kubernetes", "JAVA", "DBMS", "Go"],
 
   // Social links — used in contact section + footer
   // Set a value to "" to hide that link
