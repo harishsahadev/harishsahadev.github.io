@@ -1,0 +1,963 @@
+---
+import Base from "../layouts/Base.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import CertCard from "../components/CertCard.astro";
+import { getCollection } from "astro:content";
+import { SITE } from "../config/site";
+import { compareContentDatesDesc } from "../utils/contentDates";
+
+const allProjects = await getCollection("projects");
+const projects = allProjects
+  .sort((a, b) => {
+    if (a.data.featured !== b.data.featured) {
+      return Number(b.data.featured) - Number(a.data.featured);
+    }
+
+    if (a.data.order != null && b.data.order != null) {
+      return a.data.order - b.data.order;
+    }
+
+    if (a.data.order != null) return -1;
+    if (b.data.order != null) return 1;
+
+    return compareContentDatesDesc(a.data.date, b.data.date);
+  })
+  .slice(0, 4);
+
+const allCerts = await getCollection("certifications");
+const certs = allCerts.sort((a, b) => {
+  if (a.data.order != null && b.data.order != null) {
+    return a.data.order - b.data.order;
+  }
+
+  if (a.data.order != null) return -1;
+  if (b.data.order != null) return 1;
+
+  return compareContentDatesDesc(a.data.date, b.data.date);
+}).slice(0, 3);
+
+const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
+  .slice(0, 3);
+
+const roles = SITE.roles;
+const hasRecentPosts = recentPosts.length > 0;
+const contactSectionClass = hasRecentPosts ? "section section-alt section-contact" : "section section-contact";
+
+function resolveProjectRepoUrl(repoUrl?: string) {
+  if (!repoUrl) return undefined;
+
+  return repoUrl.replace("https://github.com/yourusername/", `https://github.com/${SITE.social.githubUsername}/`);
+}
+---
+
+<Base title={SITE.title} description={SITE.description}>
+  <div id="reading-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} aria-label="Page scroll progress"></div>
+
+  <!-- ═══════════════════════════════════════════════════════ HERO -->
+  <section class="hero" aria-label="Introduction">
+    <div class="container hero-inner">
+
+      {SITE.availableForWork && (
+        <div class="hero-tag">
+          <span class="tag-dot"></span>
+          Available for opportunities
+        </div>
+      )}
+
+      <h1 class="hero-headline">
+        {SITE.tagline.split(" people ")[0]}<br/>
+        <em>people {SITE.tagline.split(" people ")[1] ?? "remember."}</em>
+      </h1>
+
+      <p class="hero-bio">{SITE.bio}</p>
+
+      <div class="hero-ctas">
+        <a href="#projects" class="cta-primary">View Projects</a>
+        <a href="https://drive.google.com/file/d/1ycsQIjvND_S5GcyR_Ux8cBgcIfaK-6Mj/view?usp=sharing" class="cta-secondary" target="_blank" rel="noopener">
+          Download Résumé
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- Typewriter roles -->
+      <div class="hero-roles" aria-hidden="true">
+        <span class="roles-prefix">→</span>
+        <span id="typewriter" class="roles-text"></span>
+        <span class="cursor">_</span>
+      </div>
+
+      <!-- Tech stack badges -->
+      <div class="stack-row" aria-label="Tech stack">
+        {SITE.stack.map((t) => (
+          <span class="stack-badge">{t}</span>
+        ))}
+      </div>
+    </div>
+
+    <!-- Background grid -->
+    <div class="hero-grid" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ EXPERIENCE -->
+  <section id="experience" class="section section-alt" aria-labelledby="experience-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Experience</div>
+        <h2 id="experience-heading" class="section-title">Professional experience</h2>
+        <p class="section-desc">
+          AI product and engineering work delivered across web, mobile, and cloud platforms.
+        </p>
+      </header>
+
+      <div class="experience-list">
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">Platelink UKI LTD</p>
+              <p class="experience-role">Full Stack Developer, Full time (Remote)</p>
+            </div>
+            <p class="experience-dates">Nov’24 – Oct’25</p>
+          </div>
+          <p>
+            Developed and deployed AI-powered web and mobile applications for food analysis platforms, leading frontend development.
+          </p>
+          <ul>
+            <li>Designed prototypes and built system components, integrating GenAI-based backend services for image-based nutrient identification.</li>
+            <li>Developed cross-platform mobile apps using Flutter and web apps using React.</li>
+            <li>Deployed scalable applications on Google Cloud and collaborated on backend integrations.</li>
+          </ul>
+        </article>
+
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">Freelance Software & AI projects</p>
+              <p class="experience-role">Freelance developer</p>
+            </div>
+            <p class="experience-dates">Nov’25 – Present</p>
+          </div>
+          <p>
+            Worked across software development and AI projects, delivering product-focused web and machine learning solutions for varied client use cases.
+          </p>
+          <ul>
+            <li>Built custom software solutions and AI prototypes for clients across web and cloud platforms.</li>
+            <li>Implemented data-driven automation and intelligent workflows using modern AI toolchains.</li>
+            <li>Delivered end-to-end features that combined frontend, backend, and ML model integration.</li>
+          </ul>
+        </article>
+
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">IIT Madras, BS Degree Program</p>
+              <p class="experience-role">Teaching Assistant, Intern</p>
+            </div>
+            <p class="experience-dates">Feb’23 – May’23</p>
+          </div>
+          <p>
+            Teaching Assistant (Intern) for Programming, Data Structures and Algorithms using Python (PDSA).
+          </p>
+          <ul>
+            <li>Conducted interactive and engaging coding sessions online.</li>
+            <li>Assisted students in problem-solving and debugging practical programming assignments.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ PROJECTS -->
+  <section id="projects" class="section" aria-labelledby="projects-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Selected work</div>
+        <h2 id="projects-heading" class="section-title">Projects</h2>
+        <p class="section-desc">
+          A focused set of the projects I want front and center.
+          The full projects page goes deeper into the problem, approach, and outcomes.
+        </p>
+      </header>
+
+      <div class="projects-grid">
+        {projects.map((p) => (
+          <ProjectCard
+            title={p.data.title}
+            description={p.data.description}
+            tech={p.data.tech}
+            liveUrl={p.data.liveUrl}
+            repoUrl={resolveProjectRepoUrl(p.data.repoUrl)}
+            learnings={p.data.learnings}
+            slug={p.id}
+            showKnowMore={true}
+          />
+        ))}
+      </div>
+
+      <a href="/projects" class="all-posts-link">
+        All projects
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ CERTIFICATIONS -->
+  <section id="certifications" class="section section-alt" aria-labelledby="certs-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Credentials</div>
+        <h2 id="certs-heading" class="section-title">Certifications</h2>
+        <p class="section-desc">
+          Formal validation of things I've spent time learning properly.
+        </p>
+      </header>
+
+      <div class="certs-grid">
+        {certs.map((c) => (
+          <CertCard
+            name={c.data.name}
+            issuer={c.data.issuer}
+            date={c.data.date}
+            tags={c.data.tags}
+            verifyUrl={c.data.verifyUrl}
+            badge={c.data.badge}
+            description={c.data.description}
+            detailedDescription={c.data.detailedDescription}
+          />
+        ))}
+      </div>
+
+      <a href="/certificates" class="all-posts-link">
+        All certificates
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M5 12h14M12 5l7 7-7 7"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ BLOG TEASER -->
+  {hasRecentPosts && (
+    <section id="writing" class="section" aria-labelledby="blog-heading">
+      <div class="container">
+        <header class="section-header">
+          <div class="section-label">Writing</div>
+          <h2 id="blog-heading" class="section-title">Recent Posts</h2>
+          <p class="section-desc">
+            Notes on things I've figured out, and things I'm still figuring out.
+          </p>
+        </header>
+
+        <ul class="blog-list" role="list">
+          {recentPosts.map((post) => (
+            <li>
+              <a href={`/blog/${post.id}`} class="blog-row">
+                <span class="blog-row-title">{post.data.title}</span>
+                <span class="blog-row-date">
+                  {post.data.pubDate.toLocaleDateString("en-US", { month: "short", year: "numeric" })}
+                </span>
+                <svg class="blog-row-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <a href="/blog" class="all-posts-link">
+          All posts
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══════════════════════════════════════════════════════ CONTACT -->
+  <section id="contact" class={contactSectionClass} aria-labelledby="contact-heading">
+    <div class="container">
+      <div class="contact-inner">
+        <div class="contact-details">
+          <header class="section-header contact-header">
+            <div class="section-label">Get in touch</div>
+            <h2 id="contact-heading" class="section-title">Say hello.</h2>
+            <p class="section-desc">
+              Open to full-time roles, contract work, and interesting conversations.
+              Pick your preferred channel.
+            </p>
+          </header>
+
+          <div class="contact-avatar">
+            <img src="/images/me.png" alt="Contact photo" />
+          </div>
+        </div>
+
+        <ul class="social-links" role="list">
+          {SITE.social.email && (
+            <li>
+              <a href={`mailto:${SITE.social.email}`} class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">Email</span>
+                  <span class="social-handle">{SITE.social.email}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.github && (
+            <li>
+              <a href={SITE.social.github} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0 1 12 6.844a9.59 9.59 0 0 1 2.504.337c1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.02 10.02 0 0 0 22 12.017C22 6.484 17.522 2 12 2z"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">GitHub</span>
+                  <span class="social-handle">{SITE.social.githubHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.linkedin && (
+            <li>
+              <a href={SITE.social.linkedin} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">LinkedIn</span>
+                  <span class="social-handle">{SITE.social.linkedinName}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.twitter && (
+            <li>
+              <a href={SITE.social.twitter} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.741l7.73-8.835L1.254 2.25H8.08l4.253 5.622zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                </span>
+                <span class="social-info">
+                  <span class="social-name">X / Twitter</span>
+                  <span class="social-handle">{SITE.social.twitterHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.kaggle && (
+            <li>
+              <a href={SITE.social.kaggle} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  {SITE.social.kaggleIcon ? (
+                    <img src={SITE.social.kaggleIcon} alt="Kaggle logo" />
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm4.934 13.645c-.143.63-.8 1.018-1.418.894l-2.012-.424-1.51 1.58a1.2 1.2 0 0 1-1.648.083l-1.453-1.376-2.422.52c-.625.135-1.24-.187-1.47-.78a1.235 1.235 0 0 1 .35-1.36l3.905-3.787a1.2 1.2 0 0 1 1.7.01l2.135 2.143 1.58-.41c.63-.163 1.296.168 1.49.78.197.615.013 1.28-.34 1.814l-.505.787.382.41c.392.425.63.974.62 1.541Z"/></svg>
+                  )}
+                </span>
+                <span class="social-info">
+                  <span class="social-name">Kaggle</span>
+                  <span class="social-handle">{SITE.social.kaggleHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.huggingFace && (
+            <li>
+              <a href={SITE.social.huggingFace} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  {SITE.social.huggingFaceIcon ? (
+                    <img src={SITE.social.huggingFaceIcon} alt="Hugging Face logo" />
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2Zm3.46 11.943c-.208 1.66-1.26 3.054-2.71 3.67-.025.557-.43 1.538-1.19 1.538-.667 0-1.087-.56-1.1-1.112-.32-.173-1.37-.636-1.37-1.91 0-.14.009-.28.03-.416a3.893 3.893 0 0 1-1.57-.16c-1.1-.275-1.492-1.204-1.492-2.02 0-.89.502-1.776 1.1-2.373.2-.2.277-.483.2-.748-.134-.47-.706-.746-1.184-.668-.453.069-.782.45-.782.902v.015c0 .22-.176.397-.396.397a.397.397 0 0 1-.397-.397v-.016c0-1.151.823-2.157 1.936-2.38C9.703 6.1 11.36 6.1 12.32 6.1c2.638 0 4.53 1.652 4.53 4.115 0 .351-.047.696-.135 1.03a2.428 2.428 0 0 1 1.126 1.278c.09.255.08.54-.033.79-.195.47-.8.74-1.26.57-.18.08-.38.122-.585.123Zm-6.626-2.25c.36.36.954.36 1.314 0 .36-.36.36-.948 0-1.308a.927.927 0 0 0-1.314 0 .928.928 0 0 0 0 1.308Zm8.6 0c.36.36.954.36 1.314 0 .36-.36.36-.948 0-1.308a.927.927 0 0 0-1.314 0 .928.928 0 0 0 0 1.308Z"/></svg>
+                  )}
+                </span>
+                <span class="social-info">
+                  <span class="social-name">Hugging Face</span>
+                  <span class="social-handle">{SITE.social.huggingFaceHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+          {SITE.social.devto && (
+            <li>
+              <a href={SITE.social.devto} target="_blank" rel="noopener noreferrer" class="social-row">
+                <span class="social-icon">
+                  {SITE.social.devtoIcon ? (
+                    <img src={SITE.social.devtoIcon} alt="dev.to logo" />
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M3 7.5C3 5.57 4.57 4 6.5 4h11c1.93 0 3.5 1.57 3.5 3.5v9c0 1.93-1.57 3.5-3.5 3.5h-11C4.57 20 3 18.43 3 16.5v-9Zm7.421 7.103c0 .81.525 1.421 1.449 1.421.852 0 1.353-.478 1.353-1.251 0-.667-.65-1.01-1.35-1.251l-1.15-.382c-.966-.323-1.493-.832-1.493-1.59 0-.976.725-1.653 1.95-1.653 1.215 0 1.95.705 1.95 1.862h-1.354c0-.424-.232-.682-.606-.682-.364 0-.633.245-.633.62 0 .387.25.605.673.766l1.172.4c1.01.351 1.614.818 1.614 1.696 0 1.094-.882 1.845-2.308 1.845-1.254 0-2.051-.64-2.051-1.54h1.35Zm5.027-3.074c0-1.316-.842-2.207-2.262-2.207-1.419 0-2.261.891-2.261 2.207 0 1.316.842 2.207 2.261 2.207 1.42 0 2.262-.891 2.262-2.207Z"/></svg>
+                  )}
+                </span>
+                <span class="social-info">
+                  <span class="social-name">dev.to</span>
+                  <span class="social-handle">{SITE.social.devtoHandle}</span>
+                </span>
+                <svg class="social-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+              </a>
+            </li>
+          )}
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<!-- ─── Typewriter script ──────────────────────────────────────────────────── -->
+<script define:vars={{ roles }}>
+  const el = document.getElementById("typewriter");
+  if (el) {
+    let roleIdx = 0, charIdx = 0, deleting = false;
+    const tick = () => {
+      const current = roles[roleIdx];
+      if (!deleting) {
+        el.textContent = current.slice(0, ++charIdx);
+        if (charIdx === current.length) {
+          deleting = true;
+          setTimeout(tick, 2200);
+          return;
+        }
+      } else {
+        el.textContent = current.slice(0, --charIdx);
+        if (charIdx === 0) {
+          deleting = false;
+          roleIdx = (roleIdx + 1) % roles.length;
+        }
+      }
+      setTimeout(tick, deleting ? 40 : 80);
+    };
+    setTimeout(tick, 800);
+  }
+</script>
+
+<style>
+  /* ── Hero ─────────────────────────────────────────────────────────────────── */
+  .hero {
+  position: relative;
+  padding-top: clamp(1.5rem, 5vw, 3.5rem);
+  padding-bottom: clamp(1.5rem, 5vw, 3.5rem);
+  overflow: hidden;
+}
+
+  /* Subtle dot-grid background */
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle, var(--border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    opacity: 0.5;
+    pointer-events: none;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, black, transparent);
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    max-width: 52rem;
+  }
+
+  /* Availability tag */
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 0.3em 0.9em;
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s var(--ease-out) both;
+  }
+  .tag-dot {
+    width: 7px;
+    height: 7px;
+    background: #4ade80;
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px #4ade8030;
+    animation: pulse-dot 2.5s ease-in-out infinite;
+  }
+  @keyframes pulse-dot {
+    0%, 100% { box-shadow: 0 0 0 2px #4ade8030; }
+    50%       { box-shadow: 0 0 0 5px #4ade8010; }
+  }
+
+  /* Headline */
+  .hero-headline {
+    font-family: var(--font-serif);
+    font-size: clamp(2.75rem, 7vw, 5rem);
+    line-height: 1.08;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    margin-bottom: var(--space-6);
+    animation: fade-up 0.6s 0.1s var(--ease-out) both;
+  }
+  .hero-headline em {
+    font-style: italic;
+    color: var(--accent);
+  }
+
+  .hero-bio {
+    font-size: clamp(1rem, 2vw, 1.125rem);
+    color: var(--text-muted);
+    line-height: 1.7;
+    max-width: 42ch;
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s 0.2s var(--ease-out) both;
+  }
+
+  /* CTAs */
+  .hero-ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    margin-bottom: var(--space-10);
+    animation: fade-up 0.6s 0.3s var(--ease-out) both;
+  }
+  .cta-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 600;
+    padding: 0.65em 1.5em;
+    background: var(--accent);
+    color: #fff;
+    border-radius: var(--radius-sm);
+    transition: opacity var(--duration), transform var(--duration);
+  }
+  .cta-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .cta-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    padding: 0.65em 1.5em;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    transition: border-color var(--duration), color var(--duration),
+                transform var(--duration);
+  }
+  .cta-secondary:hover {
+    border-color: var(--text-muted);
+    color: var(--text);
+    transform: translateY(-1px);
+  }
+
+  /* Typewriter */
+  .hero-roles {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--text-faint);
+    margin-bottom: var(--space-8);
+    animation: fade-up 0.6s 0.4s var(--ease-out) both;
+    min-height: 1.5em;
+  }
+  .roles-prefix { color: var(--accent); }
+  .cursor {
+    color: var(--accent);
+    animation: blink 1s step-end infinite;
+  }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+
+  /* Stack badges */
+  .stack-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    animation: fade-up 0.6s 0.5s var(--ease-out) both;
+  }
+  .stack-badge {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.3em 0.7em;
+    transition: color var(--duration), border-color var(--duration);
+  }
+  .stack-badge:hover {
+    color: var(--text-muted);
+    border-color: var(--text-faint);
+  }
+
+  /* ── Sections ─────────────────────────────────────────────────────────────── */
+  .section {
+    padding-block: clamp(4rem, 8vw, 6rem);
+  }
+
+  /* Explicit section variant so conditional sections do not break rhythm */
+  .section-alt {
+    background: var(--bg-raised);
+  }
+
+  .section-header {
+    margin-bottom: var(--space-12);
+    max-width: 42ch;
+  }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .section-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    line-height: 1.15;
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .section-desc {
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+  }
+
+  /* ── Projects grid ────────────────────────────────────────────────────────── */
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+    gap: var(--space-4);
+  }
+
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-4);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--accent);
+  }
+
+  .section-link svg {
+    transition: transform var(--duration) var(--ease-out);
+  }
+
+  .section-link:hover svg {
+    transform: translateX(2px);
+  }
+
+  /* ── Certs grid ───────────────────────────────────────────────────────────── */
+  .certs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 20rem), 1fr));
+    gap: var(--space-6);
+  }
+
+  /* ── Blog teaser ──────────────────────────────────────────────────────────── */
+  .blog-list {
+    list-style: none;
+    border-top: 1px solid var(--border);
+  }
+
+  .blog-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-5) 0;
+    transition: none;
+  }
+
+  .blog-list li:nth-child(odd) .blog-row {
+    background: var(--bg-card);
+  }
+
+  .blog-list li:nth-child(even) .blog-row {
+    background: var(--bg-raised);
+  }
+
+  .blog-row-title {
+    flex: 1;
+    font-size: 0.9375rem;
+    color: var(--text-muted);
+    transition: color var(--duration);
+  }
+  .blog-row:hover .blog-row-title { color: var(--text); }
+
+  .blog-row-date {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+  }
+
+  .blog-row-arrow {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transform: translateX(0);
+    transition: transform 200ms var(--ease-out), color 200ms;
+  }
+  .blog-row:hover .blog-row-arrow {
+    transform: translateX(4px);
+    color: var(--accent);
+  }
+
+  .experience-list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .experience-card {
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .experience-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .experience-company {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .experience-role {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .experience-dates {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .experience-card p {
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin: 0 0 var(--space-4);
+  }
+
+  .experience-card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-muted);
+    list-style: disc;
+    line-height: 1.75;
+  }
+
+  .experience-card li {
+    margin-bottom: 0.75rem;
+  }
+
+  .all-posts-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-6);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: color var(--duration);
+  }
+  .all-posts-link:hover { color: var(--accent); }
+  .all-posts-link svg {
+    transition: transform 200ms var(--ease-out);
+  }
+  .all-posts-link:hover svg { transform: translateX(3px); }
+
+  /* ── Contact ──────────────────────────────────────────────────────────────── */
+  .contact-inner {
+    display: grid;
+    grid-template-columns: 1fr 1.2fr;
+    gap: var(--space-16);
+    align-items: start;
+  }
+  .contact-header { max-width: none; margin-bottom: 0; }
+
+  .contact-details {
+    display: grid;
+    gap: var(--space-6);
+    justify-items: start;
+  }
+
+  .contact-avatar {
+    width: 12rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    justify-self: center;
+    overflow: hidden;
+    background: linear-gradient(180deg, rgba(232,87,42,0.15), rgba(0,0,0,0.08));
+    border: 1px solid var(--border);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16);
+    margin-top: var(--space-4);
+    margin-bottom: var(--space-6);
+    transition: border-color var(--duration), box-shadow var(--duration), transform 250ms var(--ease-out);
+  }
+  .contact-avatar:hover {
+    border-color: var(--accent);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.16), 0 0 0 8px rgba(249,115,22,0.08);
+    transform: translateY(-2px);
+  }
+  .contact-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .social-links {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+
+  .social-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    padding: var(--space-1);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    transition: border-color var(--duration), transform 250ms var(--ease-out);
+  }
+  .social-row:hover {
+    border-color: var(--accent);
+    transform: translateX(4px);
+  }
+
+  .social-icon {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    flex-shrink: 0;
+    transition: color var(--duration), border-color var(--duration);
+  }
+  .social-icon img {
+    width: 70%;
+    height: 70%;
+    object-fit: contain;
+    display: block;
+  }
+  .social-row:hover .social-icon {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .social-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+  }
+  .social-name {
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--text);
+  }
+  .social-handle {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+
+  .social-arrow {
+    color: var(--text-faint);
+    flex-shrink: 0;
+    transition: transform 200ms var(--ease-out), color 200ms;
+  }
+  .social-row:hover .social-arrow {
+    transform: translateX(3px);
+    color: var(--accent);
+  }
+
+  @media (max-width: 900px) {
+    .contact-inner { grid-template-columns: 1fr; gap: var(--space-10); }
+    .contact-avatar {
+      justify-self: center;
+      width: 8rem;
+    }
+  }
+
+  /* ── Animations ───────────────────────────────────────────────────────────── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Reading progress bar ─────────────────────────────────────────────────── */
+  #reading-progress {
+    --progress: 0%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    height: 2px;
+    width: var(--progress);
+    background: var(--accent);
+    transition: width 100ms linear;
+    pointer-events: none;
+  }
+
+  /* ── Responsive ───────────────────────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .contact-inner { grid-template-columns: 1fr; gap: var(--space-10); }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<script>
+  const progressBar = document.getElementById("reading-progress");
+
+  if (progressBar) {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY || window.pageYOffset;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollHeight > 0 ? Math.min(100, (scrollTop / scrollHeight) * 100) : 0;
+      progressBar.style.setProperty("--progress", `${pct}%`);
+      progressBar.setAttribute("aria-valuenow", String(Math.round(pct)));
+    };
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  }
+</script>

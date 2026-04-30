@@ -1,0 +1,8 @@
+name: "Basics of PyTorch Programming"
+issuer: "IIT Madras BS Degree Program"
+date: "2026-02-04"
+tags: ["PyTorch", "Deep Learning", "Machine Learning", "Workshop"]
+verifyUrl: "https://ds.study.iitm.ac.in/document_verification/ddb89b22017796c1212838ea8777c0beac452448343a2fc006720768f70d8dbf"
+badge: "/images/certs/pytorch-basics-workshop.png"
+description: "Workshop covering the fundamentals of PyTorch for building and training deep learning models."
+detailedDescription: "This certificate of excellence recognizes successful completion of the workshop 'Basics of PyTorch Programming' conducted by the IIT Madras BS Degree Program. The workshop covered core concepts of deep learning using PyTorch, including tensors, neural network construction, training workflows, and practical implementation. The program was conducted from February 1 to February 4, 2026."

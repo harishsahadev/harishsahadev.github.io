@@ -1,0 +1,7 @@
+name: "Cloud Computing"
+issuer: "NPTEL (IIT Kharagpur)"
+date: "2024-04"
+tags: ["Cloud Computing", "Distributed Systems", "NPTEL", "SWAYAM"]
+verifyUrl: "https://nptel.ac.in/noc/E_Certificate/NPTEL24CS17S45340150530326333"
+badge: "/images/certs/cloud-computing-nptel.png"
+description: "NPTEL certification in Cloud Computing covering core concepts of distributed systems and cloud architectures."

@@ -1,0 +1,25 @@
+---
+import Base from "../../layouts/Base.astro";
+import BlogPostCard from "../../components/BlogPostCard.astro";
+import { getCollection } from "astro:content";
+
+const posts = (await getCollection("blog", ({ data }) => !data.draft))
+  .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime());
+---
+
+<Base title="Blog" description="Writing on TypeScript, web performance, and developer tooling.">
+  <div class="container" style="padding-block: 5rem;">
+    <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 3rem;">
+      Writing
+    </h1>
+    {posts.map((post) => (
+      <BlogPostCard
+        title={post.data.title}
+        description={post.data.description}
+        pubDate={post.data.pubDate}
+        tags={post.data.tags}
+        slug={post.id}
+      />
+    ))}
+  </div>
+</Base>

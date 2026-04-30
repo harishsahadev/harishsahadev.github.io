@@ -1,0 +1,41 @@
+---
+title: "Why I Migrated from Next.js to Astro"
+description: "Next.js is great — but for a content site, shipping zero JS by default is a hard argument to beat."
+pubDate: 2025-02-10
+tags: ["astro", "nextjs", "performance"]
+draft: false
+---
+
+I want to be clear upfront: this is not a hit piece on Next.js. I use it at work, I think it's excellent for app-like experiences. But when I sat down to rebuild my portfolio, the calculus shifted.
+
+## What changed my mind
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+
+Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt.
+
+## The Lighthouse scores
+
+Sunt in culpa qui officia deserunt mollit anim id est laborum. Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+
+| Metric | Next.js | Astro |
+|---|---|---|
+| Performance | 74 | 99 |
+| LCP | 2.8s | 0.7s |
+| TBT | 340ms | 0ms |
+| Bundle size | 142kb | 0kb |
+
+## Islands where it counts
+
+Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat.
+
+```astro
+---
+// Only this component ships JS — everything else is static HTML
+import ThemeToggle from "../components/ThemeToggle";
+---
+
+<ThemeToggle client:load />
+```
+
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. The `client:load` directive is the entire philosophy in one attribute — opt in to interactivity, don't opt out of it.

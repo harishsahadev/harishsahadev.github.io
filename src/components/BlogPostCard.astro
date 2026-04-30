@@ -1,0 +1,139 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  pubDate: Date;
+  tags: string[];
+  slug: string;
+  /** Estimated reading time in minutes — calculate externally or use a remark plugin */
+  readingTime?: number;
+}
+
+const { title, description, pubDate, tags, slug, readingTime } = Astro.props;
+
+const formattedDate = pubDate.toLocaleDateString("en-US", {
+  day: "numeric",
+  month: "short",
+  year: "numeric",
+});
+
+const iso = pubDate.toISOString();
+---
+
+<a href={`/blog/${slug}`} class="blog-card" aria-label={title}>
+  <article>
+    <header class="blog-card-header">
+      <div class="blog-card-meta">
+        <time datetime={iso} class="blog-date">{formattedDate}</time>
+        {readingTime && (
+          <>
+            <span class="meta-sep" aria-hidden="true">·</span>
+            <span class="blog-reading-time">{readingTime} min read</span>
+          </>
+        )}
+      </div>
+
+      <!-- Arrow that animates on hover -->
+      <svg class="card-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M5 12h14M12 5l7 7-7 7"/>
+      </svg>
+    </header>
+
+    <h2 class="blog-card-title">{title}</h2>
+    <p class="blog-card-desc">{description}</p>
+
+    {tags.length > 0 && (
+      <ul class="blog-tags" role="list" aria-label="Tags">
+        {tags.slice(0, 4).map((tag) => (
+          <li class="blog-tag">#{tag}</li>
+        ))}
+      </ul>
+    )}
+  </article>
+</a>
+
+<style>
+  .blog-card {
+    display: block;
+    padding: var(--space-6) var(--space-6);
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    transition: background var(--duration), box-shadow var(--duration), transform 250ms var(--ease-out);
+  }
+  .blog-card:nth-of-type(odd) { background: var(--bg); }
+  .blog-card:nth-of-type(even) { background: var(--bg-raised); }
+  .blog-card:first-child { padding-top: 0; }
+  .blog-card:last-child  { border-bottom: none; }
+  .blog-card:hover {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
+
+  .blog-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-3);
+  }
+
+  .blog-card-meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+  }
+  .meta-sep { user-select: none; }
+
+  .card-arrow {
+    width: 20px;
+    height: 20px;
+    color: var(--text-faint);
+    transform: translateX(0) scale(1);
+    transition: transform 200ms var(--ease-out), color 200ms;
+  }
+  .blog-card:hover .card-arrow {
+    transform: translateX(6px) scale(1.1);
+    color: var(--accent);
+  }
+
+  .blog-card-title {
+    font-family: var(--font-serif);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: var(--space-2);
+    transition: color 150ms;
+  }
+  .blog-card:hover .blog-card-title { color: var(--accent); }
+
+  .blog-card-desc {
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: var(--space-4);
+    /* Clamp to 2 lines */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .blog-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+  }
+  .blog-tag {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    color: var(--text-faint);
+    letter-spacing: 0.02em;
+    transition: color 150ms;
+  }
+  .blog-card:hover .blog-tag { color: var(--text-muted); }
+</style>

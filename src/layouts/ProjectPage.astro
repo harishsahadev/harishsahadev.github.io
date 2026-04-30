@@ -1,0 +1,290 @@
+---
+import Base from "./Base.astro";
+import type { ContentDate } from "../utils/contentDates";
+import { formatContentDate, getContentDateTime } from "../utils/contentDates";
+
+interface Props {
+  title: string;
+  description: string;
+  date: ContentDate;
+  tech: string[];
+  liveUrl?: string;
+  repoUrl?: string;
+  learnings?: string;
+  image?: string;
+  imageAlt?: string;
+  youtubeUrl?: string;
+}
+
+const { title, description, date, tech, liveUrl, repoUrl, learnings, image, imageAlt, youtubeUrl } =
+  Astro.props;
+
+const formattedDate = formatContentDate(date, "long");
+const dateTime = getContentDateTime(date);
+
+function getYouTubeEmbedUrl(url?: string) {
+  if (!url) return undefined;
+
+  try {
+    const parsed = new URL(url);
+
+    if (parsed.hostname === "youtu.be") {
+      const videoId = parsed.pathname.slice(1);
+      return videoId ? `https://www.youtube.com/embed/${videoId}` : undefined;
+    }
+
+    if (parsed.hostname.includes("youtube.com")) {
+      if (parsed.pathname === "/watch") {
+        const videoId = parsed.searchParams.get("v");
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : undefined;
+      }
+
+      if (parsed.pathname.startsWith("/embed/")) {
+        return url;
+      }
+
+      if (parsed.pathname.startsWith("/shorts/")) {
+        const videoId = parsed.pathname.split("/")[2];
+        return videoId ? `https://www.youtube.com/embed/${videoId}` : undefined;
+      }
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
+}
+
+const youtubeEmbedUrl = getYouTubeEmbedUrl(youtubeUrl);
+---
+
+<Base title={title} description={description} article>
+  <div class="project-wrapper container">
+    <article class="project-detail">
+      <a href="/projects" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M19 12H5M12 19l-7-7 7-7"/>
+        </svg>
+        All projects
+      </a>
+
+      <header class="project-header">
+        <div class="project-meta">
+          <time datetime={dateTime}>{formattedDate}</time>
+          <span aria-hidden="true">·</span>
+          <span>{tech.length} technologies</span>
+        </div>
+
+        <h1 class="project-title">{title}</h1>
+        <p class="project-desc">{description}</p>
+
+        <ul class="project-tech" role="list" aria-label="Technologies used">
+          {tech.map((item) => (
+            <li class="project-tech-pill">{item}</li>
+          ))}
+        </ul>
+
+        {(liveUrl || repoUrl) && (
+          <div class="project-actions">
+            {liveUrl && (
+              <a href={liveUrl} target="_blank" rel="noopener noreferrer" class="project-action primary">
+                Live demo
+              </a>
+            )}
+            {repoUrl && (
+              <a href={repoUrl} target="_blank" rel="noopener noreferrer" class="project-action">
+                View source
+              </a>
+            )}
+          </div>
+        )}
+      </header>
+
+      {youtubeEmbedUrl && (
+        <figure class="project-media project-video">
+          <iframe
+            src={youtubeEmbedUrl}
+            title={`${title} video walkthrough`}
+            loading="lazy"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+        </figure>
+      )}
+
+      {!youtubeEmbedUrl && image && (
+        <figure class="project-media">
+          <img src={image} alt={imageAlt ?? `${title} preview`} loading="eager" />
+        </figure>
+      )}
+
+      {learnings && (
+        <aside class="project-learnings">
+          <p class="project-learnings-label">What I learned</p>
+          <p>{learnings}</p>
+        </aside>
+      )}
+
+      <div class="prose">
+        <slot />
+      </div>
+    </article>
+  </div>
+</Base>
+
+<style>
+  .project-wrapper {
+    padding-top: var(--space-16);
+    padding-bottom: var(--space-24);
+  }
+
+  .project-detail {
+    max-width: min(100%, 74rem);
+    margin-inline: auto;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    font-size: 0.875rem;
+    color: var(--text-muted);
+    margin-bottom: var(--space-8);
+  }
+
+  .back-link:hover {
+    color: var(--accent);
+  }
+
+  .project-header {
+    margin-bottom: var(--space-12);
+  }
+
+  .project-meta {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    margin-bottom: var(--space-4);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .project-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2rem, 5vw, 4rem);
+    line-height: 1.05;
+    margin-bottom: var(--space-4);
+  }
+
+  .project-desc {
+    max-width: 60rem;
+    font-size: 1.125rem;
+    color: var(--text-muted);
+    line-height: 1.7;
+    margin-bottom: var(--space-6);
+  }
+
+  .project-tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    list-style: none;
+    margin-bottom: var(--space-6);
+  }
+
+  .project-tech-pill {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: var(--bg-raised);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 0.25rem 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .project-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+  }
+
+  .project-action {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 9rem;
+    padding: 0.8rem 1.2rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    color: var(--text);
+    transition: transform 240ms var(--ease-out), border-color var(--duration), background var(--duration);
+  }
+
+  .project-action.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff7ef;
+  }
+
+  .project-action:hover {
+    transform: translateY(-1px);
+    border-color: var(--accent);
+  }
+
+  .project-media {
+    margin-bottom: var(--space-8);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background:
+      radial-gradient(circle at top left, var(--accent-muted), transparent 32%),
+      linear-gradient(180deg, var(--bg-card), var(--bg-raised));
+  }
+
+  .project-media img {
+    width: 100%;
+    max-height: 42rem;
+    object-fit: cover;
+  }
+
+  .project-video {
+    aspect-ratio: 16 / 9;
+    padding: 0;
+  }
+
+  .project-video iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    display: block;
+  }
+
+  .project-learnings {
+    margin-bottom: var(--space-8);
+    padding: var(--space-6);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(180deg, color-mix(in srgb, var(--accent) 8%, var(--bg-card)), var(--bg-card));
+  }
+
+  .project-learnings-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .project-detail :global(.prose) {
+    max-width: 100%;
+  }
+</style>
