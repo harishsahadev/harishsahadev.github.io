@@ -3,6 +3,7 @@ import Base from "../../layouts/Base.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 import { SITE } from "../../config/site";
+import { compareContentDatesDesc } from "../../utils/contentDates";
 
 const projects = (await getCollection("projects"))
   .sort((a, b) => {
@@ -17,7 +18,7 @@ const projects = (await getCollection("projects"))
     if (a.data.order != null) return -1;
     if (b.data.order != null) return 1;
 
-    return b.data.date.getTime() - a.data.date.getTime();
+    return compareContentDatesDesc(a.data.date, b.data.date);
   });
 
 function resolveProjectRepoUrl(repoUrl?: string) {

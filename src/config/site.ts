@@ -13,14 +13,14 @@ export const SITE = {
   // Used in <title> and meta tags
   title: "Harish Sahadev — Full-Stack Developer",
   description:
-    "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in Kerala — building globally.",
+    "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in India — building globally.",
 
   // The value you set in astro.config.mjs → site: "..."
   url: "https://harishsahadev.github.io",
 
   // Hero section
   tagline: "I build software people remember.",
-  bio: "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in Kerala — building globally.",
+  bio: "Full-stack developer with a bias toward clean APIs, fast UIs, and things that actually ship. Based in India — building globally.",
   availableForWork: true,
   currentlyLearning: "Distributed systems & Rust",
 

@@ -1,6 +1,8 @@
 name: "Professional Cloud Developer"
 issuer: "Google Cloud"
 date: "2024-09-15"
+tags: ["GCP", "Cloud Run", "Pub/Sub", "GKE"]
 verifyUrl: "https://www.credly.com/badges/your-badge-id-2"
 badge: "/images/certs/gcp-pcd.png"
 description: "Building scalable applications on GCP — Cloud Run, Pub/Sub, Spanner, and GKE."
+detailedDescription: "Professional Cloud Developer validates practical experience in building, deploying, and scaling applications on Google Cloud. It covers application design, service integration, operational reliability, and production-ready development patterns across core GCP services."

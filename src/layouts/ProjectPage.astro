@@ -1,10 +1,12 @@
 ---
 import Base from "./Base.astro";
+import type { ContentDate } from "../utils/contentDates";
+import { formatContentDate, getContentDateTime } from "../utils/contentDates";
 
 interface Props {
   title: string;
   description: string;
-  date: Date;
+  date: ContentDate;
   tech: string[];
   liveUrl?: string;
   repoUrl?: string;
@@ -17,11 +19,8 @@ interface Props {
 const { title, description, date, tech, liveUrl, repoUrl, learnings, image, imageAlt, youtubeUrl } =
   Astro.props;
 
-const formattedDate = date.toLocaleDateString("en-US", {
-  day: "numeric",
-  month: "long",
-  year: "numeric",
-});
+const formattedDate = formatContentDate(date, "long");
+const dateTime = getContentDateTime(date);
 
 function getYouTubeEmbedUrl(url?: string) {
   if (!url) return undefined;
@@ -71,7 +70,7 @@ const youtubeEmbedUrl = getYouTubeEmbedUrl(youtubeUrl);
 
       <header class="project-header">
         <div class="project-meta">
-          <time datetime={date.toISOString()}>{formattedDate}</time>
+          <time datetime={dateTime}>{formattedDate}</time>
           <span aria-hidden="true">·</span>
           <span>{tech.length} technologies</span>
         </div>

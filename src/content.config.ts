@@ -1,5 +1,7 @@
-import { defineCollection, z } from "astro:content";
+import { defineCollection } from "astro:content";
 import { glob, file } from "astro/loaders";
+import { z } from "zod";
+import { parseContentDate } from "./utils/contentDates";
 
 // ─── Blog ─────────────────────────────────────────────────────────────────────
 const blog = defineCollection({
@@ -23,7 +25,17 @@ const projects = defineCollection({
     title: z.string(),
     description: z.string(),
     tech: z.array(z.string()),
-    date: z.coerce.date(),
+    date: z.union([z.string(), z.date()]).transform((value, ctx) => {
+      try {
+        return parseContentDate(value);
+      } catch {
+        ctx.addIssue({
+          code: "custom",
+          message: "Date must be in yyyy-mm or yyyy-mm-dd format",
+        });
+        return z.NEVER;
+      }
+    }),
     liveUrl: z.union([z.string().url(), z.literal("")]).optional(),
     repoUrl: z.union([z.string().url(), z.literal("")]).optional(),
     image: z.string().optional(),
@@ -41,10 +53,23 @@ const certifications = defineCollection({
   schema: z.object({
     name: z.string(),
     issuer: z.string(),
-    date: z.coerce.date(),
+    date: z.union([z.string(), z.date()]).transform((value, ctx) => {
+      try {
+        return parseContentDate(value);
+      } catch {
+        ctx.addIssue({
+          code: "custom",
+          message: "Date must be in yyyy-mm or yyyy-mm-dd format",
+        });
+        return z.NEVER;
+      }
+    }),
+    order: z.number().int().positive().optional(),
+    tags: z.array(z.string()).default([]),
     verifyUrl: z.string().url().optional(),
     badge: z.string().optional(),
     description: z.string().optional(),
+    detailedDescription: z.string().optional(),
   }),
 });
 

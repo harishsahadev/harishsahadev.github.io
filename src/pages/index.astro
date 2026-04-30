@@ -4,6 +4,7 @@ import ProjectCard from "../components/ProjectCard.astro";
 import CertCard from "../components/CertCard.astro";
 import { getCollection } from "astro:content";
 import { SITE } from "../config/site";
+import { compareContentDatesDesc } from "../utils/contentDates";
 
 const allProjects = await getCollection("projects");
 const projects = allProjects
@@ -19,14 +20,21 @@ const projects = allProjects
     if (a.data.order != null) return -1;
     if (b.data.order != null) return 1;
 
-    return b.data.date.getTime() - a.data.date.getTime();
+    return compareContentDatesDesc(a.data.date, b.data.date);
   })
   .slice(0, 4);
 
 const allCerts = await getCollection("certifications");
-const certs = allCerts.sort((a, b) =>
-  b.data.date.getTime() - a.data.date.getTime()
-);
+const certs = allCerts.sort((a, b) => {
+  if (a.data.order != null && b.data.order != null) {
+    return a.data.order - b.data.order;
+  }
+
+  if (a.data.order != null) return -1;
+  if (b.data.order != null) return 1;
+
+  return compareContentDatesDesc(a.data.date, b.data.date);
+});
 
 const recentPosts = (await getCollection("blog", ({ data }) => !data.draft))
   .sort((a, b) => b.data.pubDate.getTime() - a.data.pubDate.getTime())
@@ -145,9 +153,11 @@ function resolveProjectRepoUrl(repoUrl?: string) {
             name={c.data.name}
             issuer={c.data.issuer}
             date={c.data.date}
+            tags={c.data.tags}
             verifyUrl={c.data.verifyUrl}
             badge={c.data.badge}
             description={c.data.description}
+            detailedDescription={c.data.detailedDescription}
           />
         ))}
       </div>
