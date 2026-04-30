@@ -51,9 +51,15 @@ export const SITE = {
     linkedinName: "Harish Sahadev",
     twitter: "https://twitter.com/harishsahadev",
     twitterHandle: "@harishsahadev",
-    // Add more as needed:
-    // devto: "https://dev.to/harishsahadev",
-    // devtoHandle: "@harishsahadev",
+    kaggle: "https://www.kaggle.com/harishsahadevm",
+    kaggleHandle: "@harishsahadevm",
+    kaggleIcon: "/images/logos/kaggle.svg",
+    huggingFace: "https://huggingface.co/harishsahadev",
+    huggingFaceHandle: "@harishsahadev",
+    huggingFaceIcon: "/images/logos/huggingface.svg",
+    devto: "https://dev.to/harishsahadev",
+    devtoHandle: "@harishsahadev",
+    devtoIcon: "/images/logos/devto.svg",
   },
 
   // Footer

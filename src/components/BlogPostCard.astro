@@ -55,12 +55,21 @@ const iso = pubDate.toISOString();
 <style>
   .blog-card {
     display: block;
-    padding: var(--space-6) 0;
+    padding: var(--space-6) var(--space-6);
     border-bottom: 1px solid var(--border);
-    transition: none;
+    border-radius: var(--radius-md);
+    margin-bottom: var(--space-4);
+    transition: background var(--duration), box-shadow var(--duration), transform 250ms var(--ease-out);
   }
+  .blog-card:nth-of-type(odd) { background: var(--bg); }
+  .blog-card:nth-of-type(even) { background: var(--bg-raised); }
   .blog-card:first-child { padding-top: 0; }
   .blog-card:last-child  { border-bottom: none; }
+  .blog-card:hover {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg));
+    box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+    transform: translateY(-1px);
+  }
 
   .blog-card-header {
     display: flex;
@@ -80,12 +89,14 @@ const iso = pubDate.toISOString();
   .meta-sep { user-select: none; }
 
   .card-arrow {
+    width: 20px;
+    height: 20px;
     color: var(--text-faint);
-    transform: translateX(0);
+    transform: translateX(0) scale(1);
     transition: transform 200ms var(--ease-out), color 200ms;
   }
   .blog-card:hover .card-arrow {
-    transform: translateX(4px);
+    transform: translateX(6px) scale(1.1);
     color: var(--accent);
   }
 
