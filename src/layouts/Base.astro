@@ -111,10 +111,6 @@ const logoMark = `${SITE.firstName[0] ?? ""}${SITE.lastName[0] ?? ""}`.toUpperCa
             <span></span>
             <span></span>
           </button>
-
-          <a href={SITE.resumeUrl} class="btn-resume" target="_blank" rel="noopener">
-            Résumé
-          </a>
         </div>
       </nav>
     </header>
@@ -128,9 +124,9 @@ const logoMark = `${SITE.firstName[0] ?? ""}${SITE.lastName[0] ?? ""}`.toUpperCa
     <footer>
       <div class="container footer-inner">
         <p class="footer-copy">
-          © {new Date().getFullYear()} {siteTitle}
+          © {new Date().getFullYear()} {SITE.fullName}
           <span class="sep" aria-hidden="true">·</span>
-          Built with <a href="https://astro.build" target="_blank" rel="noopener">{SITE.builtWith}</a>
+          Built with <span aria-label="love">❤️</span> using <a href="https://astro.build" target="_blank" rel="noopener">Astro</a>
         </p>
         <ul class="footer-links" role="list">
           {SITE.social.github && <li><a href={SITE.social.github} target="_blank" rel="noopener" aria-label="GitHub">GitHub</a></li>}

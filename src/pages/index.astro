@@ -52,6 +52,7 @@ function resolveProjectRepoUrl(repoUrl?: string) {
 ---
 
 <Base title={SITE.title} description={SITE.description}>
+  <div id="reading-progress" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={0} aria-label="Page scroll progress"></div>
 
   <!-- ═══════════════════════════════════════════════════════ HERO -->
   <section class="hero" aria-label="Introduction">
@@ -73,7 +74,7 @@ function resolveProjectRepoUrl(repoUrl?: string) {
 
       <div class="hero-ctas">
         <a href="#projects" class="cta-primary">View Projects</a>
-        <a href={SITE.resumeUrl} class="cta-secondary" target="_blank" rel="noopener">
+        <a href="https://drive.google.com/file/d/1ycsQIjvND_S5GcyR_Ux8cBgcIfaK-6Mj/view?usp=sharing" class="cta-secondary" target="_blank" rel="noopener">
           Download Résumé
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
@@ -98,6 +99,74 @@ function resolveProjectRepoUrl(repoUrl?: string) {
 
     <!-- Background grid -->
     <div class="hero-grid" aria-hidden="true"></div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════ EXPERIENCE -->
+  <section id="experience" class="section section-alt" aria-labelledby="experience-heading">
+    <div class="container">
+      <header class="section-header">
+        <div class="section-label">Experience</div>
+        <h2 id="experience-heading" class="section-title">Professional experience</h2>
+        <p class="section-desc">
+          AI product and engineering work delivered across web, mobile, and cloud platforms.
+        </p>
+      </header>
+
+      <div class="experience-list">
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">Platelink UKI LTD</p>
+              <p class="experience-role">Full Stack Developer, Full time (Remote)</p>
+            </div>
+            <p class="experience-dates">Nov’24 – Oct’25</p>
+          </div>
+          <p>
+            Developed and deployed AI-powered web and mobile applications for food analysis platforms, leading frontend development.
+          </p>
+          <ul>
+            <li>Designed prototypes and built system components, integrating GenAI-based backend services for image-based nutrient identification.</li>
+            <li>Developed cross-platform mobile apps using Flutter and web apps using React.</li>
+            <li>Deployed scalable applications on Google Cloud and collaborated on backend integrations.</li>
+          </ul>
+        </article>
+
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">Freelance Software & AI projects</p>
+              <p class="experience-role">Freelance developer</p>
+            </div>
+            <p class="experience-dates">Nov’25 – Present</p>
+          </div>
+          <p>
+            Worked across software development and AI projects, delivering product-focused web and machine learning solutions for varied client use cases.
+          </p>
+          <ul>
+            <li>Built custom software solutions and AI prototypes for clients across web and cloud platforms.</li>
+            <li>Implemented data-driven automation and intelligent workflows using modern AI toolchains.</li>
+            <li>Delivered end-to-end features that combined frontend, backend, and ML model integration.</li>
+          </ul>
+        </article>
+
+        <article class="experience-card">
+          <div class="experience-card-header">
+            <div>
+              <p class="experience-company">IIT Madras, BS Degree Program</p>
+              <p class="experience-role">Teaching Assistant, Intern</p>
+            </div>
+            <p class="experience-dates">Feb’23 – May’23</p>
+          </div>
+          <p>
+            Teaching Assistant (Intern) for Programming, Data Structures and Algorithms using Python (PDSA).
+          </p>
+          <ul>
+            <li>Conducted interactive and engaging coding sessions online.</li>
+            <li>Assisted students in problem-solving and debugging practical programming assignments.</li>
+          </ul>
+        </article>
+      </div>
+    </div>
   </section>
 
   <!-- ═══════════════════════════════════════════════════════ PROJECTS -->
@@ -376,11 +445,11 @@ function resolveProjectRepoUrl(repoUrl?: string) {
 <style>
   /* ── Hero ─────────────────────────────────────────────────────────────────── */
   .hero {
-    position: relative;
-    padding-top: clamp(4rem, 12vw, 8rem);
-    padding-bottom: clamp(4rem, 10vw, 7rem);
-    overflow: hidden;
-  }
+  position: relative;
+  padding-top: clamp(1.5rem, 5vw, 3.5rem);
+  padding-bottom: clamp(1.5rem, 5vw, 3.5rem);
+  overflow: hidden;
+}
 
   /* Subtle dot-grid background */
   .hero-grid {
@@ -653,6 +722,65 @@ function resolveProjectRepoUrl(repoUrl?: string) {
     color: var(--accent);
   }
 
+  .experience-list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .experience-card {
+    padding: var(--space-6);
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+
+  .experience-card-header {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    flex-wrap: wrap;
+    margin-bottom: var(--space-4);
+  }
+
+  .experience-company {
+    font-family: var(--font-serif);
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.4rem;
+  }
+
+  .experience-role {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin: 0;
+  }
+
+  .experience-dates {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-faint);
+    white-space: nowrap;
+    margin: 0;
+  }
+
+  .experience-card p {
+    color: var(--text-muted);
+    line-height: 1.75;
+    margin: 0 0 var(--space-4);
+  }
+
+  .experience-card ul {
+    margin: 0;
+    padding-left: 1.25rem;
+    color: var(--text-muted);
+    list-style: disc;
+    line-height: 1.75;
+  }
+
+  .experience-card li {
+    margin-bottom: 0.75rem;
+  }
+
   .all-posts-link {
     display: inline-flex;
     align-items: center;
@@ -795,9 +923,41 @@ function resolveProjectRepoUrl(repoUrl?: string) {
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  /* ─── Reading progress bar ─────────────────────────────────────────────────── */
+  #reading-progress {
+    --progress: 0%;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    height: 2px;
+    width: var(--progress);
+    background: var(--accent);
+    transition: width 100ms linear;
+    pointer-events: none;
+  }
+
   /* ── Responsive ───────────────────────────────────────────────────────────── */
   @media (max-width: 768px) {
     .contact-inner { grid-template-columns: 1fr; gap: var(--space-10); }
     .form-row { grid-template-columns: 1fr; }
   }
 </style>
+
+<script>
+  const progressBar = document.getElementById("reading-progress");
+
+  if (progressBar) {
+    const updateProgress = () => {
+      const scrollTop = window.scrollY || window.pageYOffset;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const pct = scrollHeight > 0 ? Math.min(100, (scrollTop / scrollHeight) * 100) : 0;
+      progressBar.style.setProperty("--progress", `${pct}%`);
+      progressBar.setAttribute("aria-valuenow", String(Math.round(pct)));
+    };
+
+    window.addEventListener("scroll", updateProgress, { passive: true });
+    window.addEventListener("resize", updateProgress);
+    updateProgress();
+  }
+</script>
