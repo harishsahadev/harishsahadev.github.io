@@ -2,6 +2,7 @@ name: "Diploma in Programming"
 issuer: "Indian Institute of Technology, Madras"
 date: "2023-12-31"
 tags: ["Software Development", "Data Structures", "Algorithms", "Python", "JAVA", "JavaScript", "SQL", "Git", "Bash", "DBMS"]
+order: 5
 verifyUrl: "https://app.onlinedegree.iitm.ac.in/document_verification/c1ed6e5b5fd18cb7609e3b5b391690521a77cfc476b9bdb05ce4ae150b90025a"
 badge: "/images/certs/diploma-programming-iitm.png"
 description: "Diploma credential in programming from IIT Madras BS Degree Program."

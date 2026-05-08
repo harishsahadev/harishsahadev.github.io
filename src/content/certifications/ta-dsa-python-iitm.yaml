@@ -3,6 +3,7 @@ issuer: "IIT Madras BS Degree Program"
 date: "2023-05"
 tags: ["Python", "Data Structures", "Algorithms", "Teaching Assistant"]
 verifyUrl: ""
+order: 4
 badge: "/images/certs/ta-dsa-python-iitm.png"
 description: "Served as a Teaching Assistant for a diploma-level course on Python, data structures, and algorithms at IIT Madras."
 detailedDescription: "Worked as a Teaching Assistant (Intern) for Programming, Data Structures and Algorithms using Python (PDSA), a diploma-level (2nd year) course in the IIT Madras B.S. Degree Program. Conducted interactive online coding sessions covering data structures such as arrays, linked lists, trees, and heaps, along with algorithms including greedy methods, divide and conquer, dynamic programming, sorting, and searching techniques. Actively assisted students in problem-solving and reinforced core algorithmic concepts."

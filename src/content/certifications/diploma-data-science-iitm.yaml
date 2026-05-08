@@ -1,6 +1,7 @@
 name: "Diploma in Data Science"
 issuer: "Indian Institute of Technology, Madras"
 date: "2023-12-31"
+order: 2
 tags: ["Data Science", "Machine Learning", "Statistics", "Business Analytics"]
 verifyUrl: "https://app.onlinedegree.iitm.ac.in/document_verification/b6088e3d916c4edcdac538e3d6c146174cde3e4bf10d17785cf6a951d169a0de"
 badge: "/images/certs/diploma-data-science-iitm.png"
