@@ -8,18 +8,87 @@ const posts = (await getCollection("blog", ({ data }) => !data.draft))
 ---
 
 <Base title="Blog" description="Writing on TypeScript, web performance, and developer tooling.">
-  <div class="container" style="padding-block: 5rem;">
-    <h1 style="font-family: var(--font-serif); font-size: 2.5rem; margin-bottom: 3rem;">
-      Writing
-    </h1>
-    {posts.map((post) => (
-      <BlogPostCard
-        title={post.data.title}
-        description={post.data.description}
-        pubDate={post.data.pubDate}
-        tags={post.data.tags}
-        slug={post.id}
-      />
-    ))}
-  </div>
+  <section class="blog-archive">
+    <div class="container blog-archive-inner">
+      <header class="blog-archive-header">
+        <div class="blog-archive-label">Writing</div>
+        <h1 class="blog-archive-title">Blog</h1>
+      </header>
+
+      <div class="blog-archive-list">
+        {posts.map((post) => (
+          <BlogPostCard
+            title={post.data.title}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            tags={post.data.tags}
+            slug={post.id}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
 </Base>
+
+<style>
+  .blog-archive {
+    padding-top: clamp(2.25rem, 5vw, 3.5rem);
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+
+  .blog-archive-inner {
+    display: grid;
+    gap: var(--space-8);
+  }
+
+  .blog-archive-header {
+    max-width: 32rem;
+  }
+
+  .blog-archive-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .blog-archive-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.18;
+    color: var(--text);
+    margin-bottom: var(--space-4);
+  }
+
+  .blog-archive-list {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  @media (max-width: 640px) {
+    .blog-archive {
+      padding-top: var(--space-8);
+      padding-bottom: var(--space-16);
+    }
+
+    .blog-archive-inner {
+      gap: var(--space-6);
+    }
+
+    .blog-archive-header {
+      max-width: 100%;
+    }
+
+    .blog-archive-title {
+      font-size: 2.5rem;
+      line-height: 1.08;
+      margin-bottom: 0;
+    }
+
+    .blog-archive-list {
+      gap: var(--space-4);
+    }
+  }
+</style>
