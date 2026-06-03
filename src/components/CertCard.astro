@@ -13,6 +13,7 @@ interface Props {
   detailedDescription?: string;
   filterName?: string;
   filterTags?: string;
+  filterIssuer?: string;
 }
 
 const {
@@ -26,6 +27,7 @@ const {
   detailedDescription,
   filterName,
   filterTags,
+  filterIssuer,
 } = Astro.props;
 
 const formattedDate = formatContentDate(date);
@@ -45,6 +47,7 @@ const fullDescription = detailedDescription ?? description;
   data-cert-item
   data-cert-name={filterName}
   data-cert-tags={filterTags}
+  data-cert-issuer={filterIssuer}
 >
   {badge && (
     <div class="cert-badge-wrap">

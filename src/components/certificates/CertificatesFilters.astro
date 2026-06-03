@@ -1,0 +1,431 @@
+---
+interface Props {
+  featuredTags: string[];
+  extraTags: string[];
+  totalCertificates: number;
+}
+
+const { featuredTags, extraTags, totalCertificates } = Astro.props;
+---
+
+<div class="certificates-controls" aria-label="Certificate filters">
+  <div class="certificates-search-wrap">
+    <div class="certificates-search-shell">
+      <svg class="certificates-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="m20 20-3.5-3.5"></path>
+      </svg>
+      <input
+        id="certificate-search"
+        class="certificates-search"
+        type="search"
+        placeholder="Search by certificate title or issuer"
+        autocomplete="off"
+        aria-label="Search certificates by title or issuer"
+        data-cert-search
+      />
+    </div>
+  </div>
+
+  {featuredTags.length > 0 && (
+    <div class="certificates-filter-group">
+      <div class="certificates-filter-header">
+        <p class="certificates-filter-label">Popular tags</p>
+      </div>
+
+      <div class="certificates-filter-row">
+        <button
+          type="button"
+          class="certificates-filter-chip is-active"
+          data-cert-filter="all"
+          aria-pressed="true"
+        >
+          All
+        </button>
+
+        {featuredTags.map((tag) => (
+          <button
+            type="button"
+            class="certificates-filter-chip"
+            data-cert-filter={tag}
+            aria-pressed="false"
+          >
+            {tag}
+          </button>
+        ))}
+      </div>
+
+      {extraTags.length > 0 && (
+        <>
+          <div class="certificates-filter-extra" data-cert-extra-tags hidden>
+            {extraTags.map((tag) => (
+              <button
+                type="button"
+                class="certificates-filter-chip"
+                data-cert-filter={tag}
+                aria-pressed="false"
+              >
+                {tag}
+              </button>
+            ))}
+          </div>
+
+          <div class="certificates-filter-actions">
+            <button
+              type="button"
+              class="certificates-filter-toggle"
+              data-cert-toggle-more
+              aria-expanded="false"
+            >
+              Show more
+            </button>
+          </div>
+        </>
+      )}
+    </div>
+  )}
+</div>
+
+<p class="certificates-results" data-cert-results>
+  Showing {totalCertificates} of {totalCertificates} certificates
+</p>
+
+<p class="certificates-empty" data-cert-empty hidden>
+  No certificates match the current search and tag filter.
+</p>
+
+<script is:inline>
+  const initCertificateFilters = () => {
+    const searchInput = document.querySelector("[data-cert-search]");
+    const resultLabel = document.querySelector("[data-cert-results]");
+    const emptyState = document.querySelector("[data-cert-empty]");
+    const certItems = Array.from(document.querySelectorAll("[data-cert-item]"));
+    const filterButtons = Array.from(document.querySelectorAll("[data-cert-filter]"));
+    const toggleButton = document.querySelector("[data-cert-toggle-more]");
+    const extraTags = document.querySelector("[data-cert-extra-tags]");
+
+    let activeTag = "all";
+    let expandStage = 0;
+
+    const getExtraTagMetrics = () => {
+      if (!(extraTags instanceof HTMLElement)) {
+        return { totalRows: 0, collapsedHeight: 0, hasMoreThanTwoRows: false };
+      }
+
+      const chips = Array.from(extraTags.querySelectorAll("[data-cert-filter]")).filter(
+        (chip) => chip instanceof HTMLElement,
+      );
+
+      if (chips.length === 0) {
+        return { totalRows: 0, collapsedHeight: 0, hasMoreThanTwoRows: false };
+      }
+
+      const styles = window.getComputedStyle(extraTags);
+      const gap = Number.parseFloat(styles.rowGap || styles.gap || "0");
+      const rowTops = [];
+
+      for (const chip of chips) {
+        const top = chip.offsetTop;
+        if (!rowTops.some((value) => Math.abs(value - top) <= 1)) {
+          rowTops.push(top);
+        }
+      }
+
+      const totalRows = rowTops.length;
+      const rowsToShow = Math.min(2, totalRows);
+      const lastVisibleRowTop = rowTops[rowsToShow - 1] ?? 0;
+      const lastVisibleChip = [...chips].reverse().find((chip) => Math.abs(chip.offsetTop - lastVisibleRowTop) <= 1);
+      const collapsedHeight = lastVisibleChip instanceof HTMLElement
+        ? lastVisibleChip.offsetTop + lastVisibleChip.offsetHeight
+        : 0;
+
+      return {
+        totalRows,
+        collapsedHeight: collapsedHeight + (rowsToShow > 0 ? gap : 0),
+        hasMoreThanTwoRows: totalRows > 2,
+      };
+    };
+
+    const updateResults = () => {
+      const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
+      let visibleCount = 0;
+
+      for (const item of certItems) {
+        if (!(item instanceof HTMLElement)) continue;
+
+        const name = item.dataset.certName ?? "";
+        const issuer = item.dataset.certIssuer ?? "";
+        const tags = (item.dataset.certTags ?? "").split("|").filter(Boolean);
+        const matchesSearch = query === "" || name.includes(query) || issuer.includes(query);
+        const matchesTag = activeTag === "all" || tags.includes(activeTag.toLowerCase());
+        const isVisible = matchesSearch && matchesTag;
+
+        item.hidden = !isVisible;
+        if (isVisible) visibleCount += 1;
+      }
+
+      if (resultLabel instanceof HTMLElement) {
+        resultLabel.textContent = `Showing ${visibleCount} of ${certItems.length} certificates`;
+      }
+
+      if (emptyState instanceof HTMLElement) {
+        emptyState.hidden = visibleCount !== 0;
+      }
+    };
+
+    const applyTagExpansion = () => {
+      if (!(extraTags instanceof HTMLElement) || !(toggleButton instanceof HTMLButtonElement)) return;
+
+      const { collapsedHeight, hasMoreThanTwoRows } = getExtraTagMetrics();
+
+      if (expandStage === 0) {
+        extraTags.hidden = true;
+        extraTags.style.maxHeight = "";
+        toggleButton.textContent = "Show more";
+        toggleButton.setAttribute("aria-expanded", "false");
+        return;
+      }
+
+      extraTags.hidden = false;
+
+      if (expandStage === 1) {
+        extraTags.style.maxHeight = hasMoreThanTwoRows && collapsedHeight > 0 ? `${collapsedHeight}px` : "none";
+        toggleButton.textContent = hasMoreThanTwoRows ? "Show all" : "Close tags";
+        toggleButton.setAttribute("aria-expanded", "true");
+        return;
+      }
+
+      extraTags.style.maxHeight = "none";
+      toggleButton.textContent = "Close tags";
+      toggleButton.setAttribute("aria-expanded", "true");
+    };
+
+    for (const button of filterButtons) {
+      button.addEventListener("click", () => {
+        activeTag = button.getAttribute("data-cert-filter") ?? "all";
+
+        for (const candidate of filterButtons) {
+          const isActive = candidate === button;
+          candidate.classList.toggle("is-active", isActive);
+          candidate.setAttribute("aria-pressed", String(isActive));
+        }
+
+        updateResults();
+      });
+    }
+
+    if (searchInput instanceof HTMLInputElement) {
+      searchInput.addEventListener("input", updateResults);
+    }
+
+    if (toggleButton instanceof HTMLButtonElement && extraTags instanceof HTMLElement) {
+      toggleButton.addEventListener("click", () => {
+        const currentAction = toggleButton.textContent?.trim();
+
+        if (currentAction === "Close tags") {
+          expandStage = 0;
+        } else if (currentAction === "Show all") {
+          expandStage = 2;
+        } else if (expandStage === 0) {
+          expandStage = 1;
+        } else if (expandStage === 1) {
+          const { hasMoreThanTwoRows } = getExtraTagMetrics();
+          expandStage = hasMoreThanTwoRows ? 2 : 0;
+        } else {
+          expandStage = 0;
+        }
+
+        applyTagExpansion();
+      });
+
+      window.addEventListener("resize", applyTagExpansion);
+      applyTagExpansion();
+    }
+
+    updateResults();
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initCertificateFilters, { once: true });
+  } else {
+    initCertificateFilters();
+  }
+</script>
+
+<style>
+  .certificates-controls {
+    display: grid;
+    gap: var(--space-6);
+    margin-bottom: var(--space-6);
+  }
+
+  .certificates-search-wrap {
+    display: grid;
+    gap: var(--space-3);
+    max-width: 36rem;
+  }
+
+  .certificates-filter-label,
+  .certificates-results {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .certificates-filter-label {
+    color: var(--text-faint);
+  }
+
+  .certificates-search-shell {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.65rem 0.95rem;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--duration) var(--ease-out),
+                box-shadow var(--duration) var(--ease-out),
+                background-color var(--duration) var(--ease-out);
+  }
+
+  .certificates-search-shell:focus-within {
+    border-color: color-mix(in srgb, var(--accent) 70%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  .certificates-search-icon {
+    flex-shrink: 0;
+    color: var(--text-faint);
+  }
+
+  .certificates-search {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    padding: 0;
+    font: inherit;
+    font-size: 0.98rem;
+  }
+
+  .certificates-search:focus {
+    outline: none;
+  }
+
+  .certificates-search::placeholder {
+    color: var(--text-faint);
+  }
+
+  .certificates-filter-group {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .certificates-filter-header {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .certificates-filter-label {
+    margin: 0;
+  }
+
+  .certificates-filter-row,
+  .certificates-filter-extra {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .certificates-filter-extra[hidden] {
+    display: none;
+  }
+
+  .certificates-filter-extra {
+    overflow: hidden;
+    transition: max-height 240ms var(--ease-out);
+  }
+
+  .certificates-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
+  }
+
+  .certificates-filter-chip,
+  .certificates-filter-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: var(--bg-raised);
+    color: var(--text-muted);
+    padding: 0.42rem 0.82rem;
+    font: inherit;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: border-color var(--duration) var(--ease-out),
+                background-color var(--duration) var(--ease-out),
+                color var(--duration) var(--ease-out),
+                transform 220ms var(--ease-out);
+  }
+
+  .certificates-filter-chip:hover,
+  .certificates-filter-toggle:hover {
+    transform: translateY(-1px);
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-muted);
+  }
+
+  .certificates-filter-chip.is-active {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: var(--accent-muted);
+  }
+
+  .certificates-filter-toggle {
+    color: var(--accent);
+    background: transparent;
+    border-style: dashed;
+  }
+
+  .certificates-results {
+    color: var(--text-faint);
+    margin-bottom: var(--space-6);
+  }
+
+  .certificates-empty {
+    margin-top: var(--space-8);
+    color: var(--text-muted);
+    text-align: center;
+    padding: var(--space-6);
+    border: 1px dashed var(--border);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--bg-card) 94%, transparent);
+  }
+
+  @media (max-width: 640px) {
+    .certificates-controls {
+      gap: var(--space-5);
+    }
+
+    .certificates-search-shell {
+      padding: 0.68rem 0.9rem;
+    }
+
+    .certificates-filter-row,
+    .certificates-filter-extra {
+      gap: 0.6rem;
+    }
+  }
+</style>
