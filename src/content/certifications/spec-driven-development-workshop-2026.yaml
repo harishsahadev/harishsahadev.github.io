@@ -1,0 +1,9 @@
+name: "Future of Software Development with LLM: Spec Driven Development"
+issuer: "IIT Madras BS Degree Program"
+date: "2026-05-24"
+tags: ["LLM", "Spec Driven Development", "Software Engineering", "AI Development"]
+order: 2
+verifyUrl: "https://ds.study.iitm.ac.in/document_verification/e04b64ee43af6820e53334939695db6a9935561f5f2a225026a31357008ae29a"
+badge: "/images/certs/spec-driven-development-workshop-2026.png"
+description: "Workshop on Spec Driven Development using Large Language Models for modern software engineering workflows."
+detailedDescription: "This certificate of appreciation recognizes successful completion of the workshop 'Future of Software Development with LLM: Spec Driven Development' conducted by the IIT Madras BS Degree Program. Learned the key differences between Vibe Coding and Spec Driven Development (SDD), and how specification-driven workflows improve reliability in AI-assisted software engineering. Gained hands-on experience with OpenSpec to iteratively define requirements, refine specifications, and build applications using Large Language Models. Successfully completed the workshop project by developing a basic application using the SDD methodology. The workshop was conducted on May 24, 2026."
