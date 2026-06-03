@@ -92,33 +92,35 @@ const extraTags = sortedTags.slice(initialVisibleTags);
                   {tag}
                 </button>
               ))}
+            </div>
 
-              {extraTags.length > 0 && (
-                <>
-                  <div class="certificates-filter-extra" data-cert-extra-tags hidden>
-                    {extraTags.map((tag) => (
-                      <button
-                        type="button"
-                        class="certificates-filter-chip"
-                        data-cert-filter={tag}
-                        aria-pressed="false"
-                      >
-                        {tag}
-                      </button>
-                    ))}
-                  </div>
+            {extraTags.length > 0 && (
+              <>
+                <div class="certificates-filter-extra" data-cert-extra-tags hidden>
+                  {extraTags.map((tag) => (
+                    <button
+                      type="button"
+                      class="certificates-filter-chip"
+                      data-cert-filter={tag}
+                      aria-pressed="false"
+                    >
+                      {tag}
+                    </button>
+                  ))}
+                </div>
 
+                <div class="certificates-filter-actions" data-cert-filter-actions>
                   <button
                     type="button"
                     class="certificates-filter-toggle"
-                    data-cert-toggle
+                    data-cert-toggle-more
                     aria-expanded="false"
                   >
-                    See more
+                    Show more
                   </button>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
           </div>
         )}
       </div>
@@ -157,10 +159,50 @@ const extraTags = sortedTags.slice(initialVisibleTags);
   const emptyState = document.querySelector("[data-cert-empty]");
   const certItems = Array.from(document.querySelectorAll("[data-cert-item]"));
   const filterButtons = Array.from(document.querySelectorAll("[data-cert-filter]"));
-  const toggleButton = document.querySelector("[data-cert-toggle]");
+  const toggleButton = document.querySelector("[data-cert-toggle-more]");
   const extraTags = document.querySelector("[data-cert-extra-tags]");
 
   let activeTag = "all";
+  let expandStage = 0;
+
+  const getExtraTagMetrics = () => {
+    if (!(extraTags instanceof HTMLElement)) {
+      return { totalRows: 0, collapsedHeight: 0, hasMoreThanTwoRows: false };
+    }
+
+    const chips = Array.from(extraTags.querySelectorAll("[data-cert-filter]")).filter(
+      (chip) => chip instanceof HTMLElement,
+    );
+
+    if (chips.length === 0) {
+      return { totalRows: 0, collapsedHeight: 0, hasMoreThanTwoRows: false };
+    }
+
+    const styles = window.getComputedStyle(extraTags);
+    const gap = Number.parseFloat(styles.rowGap || styles.gap || "0");
+    const rowTops = [];
+
+    for (const chip of chips) {
+      const top = chip.offsetTop;
+      if (!rowTops.some((value) => Math.abs(value - top) <= 1)) {
+        rowTops.push(top);
+      }
+    }
+
+    const totalRows = rowTops.length;
+    const rowsToShow = Math.min(2, totalRows);
+    const lastVisibleRowTop = rowTops[rowsToShow - 1] ?? 0;
+    const lastVisibleChip = [...chips].reverse().find((chip) => Math.abs(chip.offsetTop - lastVisibleRowTop) <= 1);
+    const collapsedHeight = lastVisibleChip instanceof HTMLElement
+      ? lastVisibleChip.offsetTop + lastVisibleChip.offsetHeight
+      : 0;
+
+    return {
+      totalRows,
+      collapsedHeight: collapsedHeight + (rowsToShow > 0 ? gap : 0),
+      hasMoreThanTwoRows: totalRows > 2,
+    };
+  };
 
   const updateResults = () => {
     const query = searchInput instanceof HTMLInputElement ? searchInput.value.trim().toLowerCase() : "";
@@ -188,6 +230,33 @@ const extraTags = sortedTags.slice(initialVisibleTags);
     }
   };
 
+  const applyTagExpansion = () => {
+    if (!(extraTags instanceof HTMLElement) || !(toggleButton instanceof HTMLButtonElement)) return;
+
+    const { collapsedHeight, hasMoreThanTwoRows } = getExtraTagMetrics();
+
+    if (expandStage === 0) {
+      extraTags.hidden = true;
+      extraTags.style.maxHeight = "";
+      toggleButton.textContent = "Show more";
+      toggleButton.setAttribute("aria-expanded", "false");
+      return;
+    }
+
+    extraTags.hidden = false;
+
+    if (expandStage === 1) {
+      extraTags.style.maxHeight = hasMoreThanTwoRows && collapsedHeight > 0 ? `${collapsedHeight}px` : "none";
+      toggleButton.textContent = hasMoreThanTwoRows ? "Show all" : "Close tags";
+      toggleButton.setAttribute("aria-expanded", "true");
+      return;
+    }
+
+    extraTags.style.maxHeight = "none";
+    toggleButton.textContent = "Close tags";
+    toggleButton.setAttribute("aria-expanded", "true");
+  };
+
   for (const button of filterButtons) {
     button.addEventListener("click", () => {
       activeTag = button.getAttribute("data-cert-filter") ?? "all";
@@ -208,13 +277,26 @@ const extraTags = sortedTags.slice(initialVisibleTags);
 
   if (toggleButton instanceof HTMLButtonElement && extraTags instanceof HTMLElement) {
     toggleButton.addEventListener("click", () => {
-      const isExpanded = toggleButton.getAttribute("aria-expanded") === "true";
-      const nextExpanded = !isExpanded;
+      const currentAction = toggleButton.textContent?.trim();
 
-      toggleButton.setAttribute("aria-expanded", String(nextExpanded));
-      toggleButton.textContent = nextExpanded ? "Close tags" : "See more";
-      extraTags.hidden = !nextExpanded;
+      if (currentAction === "Close tags") {
+        expandStage = 0;
+      } else if (currentAction === "Show all") {
+        expandStage = 2;
+      } else if (expandStage === 0) {
+        expandStage = 1;
+      } else if (expandStage === 1) {
+        const { hasMoreThanTwoRows } = getExtraTagMetrics();
+        expandStage = hasMoreThanTwoRows ? 2 : 0;
+      } else {
+        expandStage = 0;
+      }
+
+      applyTagExpansion();
     });
+
+    window.addEventListener("resize", applyTagExpansion);
+    applyTagExpansion();
   }
 </script>
 
@@ -343,6 +425,18 @@ const extraTags = sortedTags.slice(initialVisibleTags);
 
   .certificates-filter-extra[hidden] {
     display: none;
+  }
+
+  .certificates-filter-extra {
+    overflow: hidden;
+    transition: max-height 240ms var(--ease-out);
+  }
+
+  .certificates-filter-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.7rem;
   }
 
   .certificates-filter-chip,

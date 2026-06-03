@@ -201,6 +201,11 @@ const fullDescription = detailedDescription ?? description;
                 transform 300ms var(--ease-out);
     cursor: pointer;
   }
+
+  .cert-card[hidden] {
+    display: none;
+  }
+
   .cert-card:hover {
     border-color: color-mix(in srgb, var(--accent) 60%, transparent);
     transform: translateY(-1px);
