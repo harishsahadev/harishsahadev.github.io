@@ -11,9 +11,22 @@ interface Props {
   badge?: string;
   description?: string;
   detailedDescription?: string;
+  filterName?: string;
+  filterTags?: string;
 }
 
-const { name, issuer, date, tags = [], verifyUrl, badge, description, detailedDescription } = Astro.props;
+const {
+  name,
+  issuer,
+  date,
+  tags = [],
+  verifyUrl,
+  badge,
+  description,
+  detailedDescription,
+  filterName,
+  filterTags,
+} = Astro.props;
 
 const formattedDate = formatContentDate(date);
 const dateTime = getContentDateTime(date);
@@ -29,6 +42,9 @@ const fullDescription = detailedDescription ?? description;
   aria-haspopup="dialog"
   aria-controls={dialogId}
   data-dialog-id={dialogId}
+  data-cert-item
+  data-cert-name={filterName}
+  data-cert-tags={filterTags}
 >
   {badge && (
     <div class="cert-badge-wrap">
