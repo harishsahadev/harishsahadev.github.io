@@ -90,21 +90,15 @@ try {
             {note.hasMultiplePages ? (
               <details class="notes-card-details">
                 <summary class="notes-card-summary">
-                  <a class="notes-card-summary-link" href={note.rootLink}>
-                    <div class="notes-card-summary-body">
+                  <div class="notes-card-summary-body">
+                    <a class="notes-card-summary-link" href={note.rootLink}>
                       <div>
                         <h2>{note.rootTitle}</h2>
                         <p>{note.rootDescription}</p>
                       </div>
-                      <span class="notes-card-arrow" aria-hidden="true">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
-                          <polyline points="15 3 21 3 21 9"/>
-                          <line x1="10" x2="21" y1="14" y2="3"/>
-                        </svg>
-                      </span>
-                    </div>
-                  </a>
+                    </a>
+                    <span class="notes-card-summary-toggle" aria-hidden="true">⌄</span>
+                  </div>
                 </summary>
 
                 <ul class="notes-page-list" role="list">
@@ -202,6 +196,10 @@ try {
     padding: var(--space-6);
     cursor: pointer;
     list-style: none;
+    border-bottom: 1px solid var(--border);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    background: var(--bg-card);
   }
 
   .notes-card-summary-link,
@@ -216,6 +214,23 @@ try {
     align-items: center;
     justify-content: space-between;
     gap: var(--space-4);
+  }
+
+  .notes-card-summary-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 200ms ease, color var(--duration), background var(--duration);
+  }
+
+  .notes-card-summary-toggle:hover {
+    background: color-mix(in srgb, var(--accent) 8%, var(--bg-card));
+    color: var(--accent);
   }
 
   .notes-card-summary-body.single {
@@ -243,12 +258,32 @@ try {
     transition: transform 200ms ease, color var(--duration);
   }
 
+  .notes-card-summary-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 999px;
+    color: var(--text-muted);
+    font-size: 1rem;
+    transition: transform 200ms ease, color var(--duration), background var(--duration);
+  }
+
+  details[open] .notes-card-summary-toggle {
+    transform: rotate(180deg);
+    color: var(--accent);
+  }
+
   .notes-page-list {
     margin: 0;
     padding: 0 var(--space-6) var(--space-6);
     list-style: none;
     display: grid;
     gap: var(--space-4);
+    border-bottom-left-radius: var(--radius-xl);
+    border-bottom-right-radius: var(--radius-xl);
+    background: var(--bg-card);
   }
 
   .notes-card-link {
