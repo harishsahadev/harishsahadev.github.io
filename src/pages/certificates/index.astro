@@ -1,4 +1,5 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import { getCollection } from "astro:content";
 import CertCard from "../../components/CertCard.astro";
 import CertificatesFilters from "../../components/certificates/CertificatesFilters.astro";
@@ -6,8 +7,18 @@ import CertificatesHeader from "../../components/certificates/CertificatesHeader
 import Base from "../../layouts/Base.astro";
 import { getCertificateTags, sortCertificates } from "../../utils/certificates";
 
-const certificates = sortCertificates(await getCollection("certifications"));
-const { featuredTags, extraTags } = getCertificateTags(certificates);
+let certificates: CollectionEntry<"certifications">[] = [];
+let featuredTags: string[] = [];
+let extraTags: string[] = [];
+
+try {
+  certificates = sortCertificates(await getCollection("certifications"));
+  const tags = getCertificateTags(certificates);
+  featuredTags = tags.featuredTags;
+  extraTags = tags.extraTags;
+} catch (error) {
+  console.error("Error loading certifications:", error);
+}
 ---
 
 <Base title="Certificates" description="Certificates, workshops, and professional credentials.">

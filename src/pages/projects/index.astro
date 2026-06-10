@@ -1,25 +1,31 @@
 ---
+import type { CollectionEntry } from "astro:content";
 import Base from "../../layouts/Base.astro";
 import ProjectCard from "../../components/ProjectCard.astro";
 import { getCollection } from "astro:content";
 import { SITE } from "../../config/site";
 import { compareContentDatesDesc } from "../../utils/contentDates";
 
-const projects = (await getCollection("projects"))
-  .sort((a, b) => {
-    if (a.data.featured !== b.data.featured) {
-      return Number(b.data.featured) - Number(a.data.featured);
-    }
+let projects: CollectionEntry<"projects">[] = [];
+try {
+  projects = (await getCollection("projects"))
+    .sort((a, b) => {
+      if (a.data.featured !== b.data.featured) {
+        return Number(b.data.featured) - Number(a.data.featured);
+      }
 
-    if (a.data.order != null && b.data.order != null) {
-      return a.data.order - b.data.order;
-    }
+      if (a.data.order != null && b.data.order != null) {
+        return a.data.order - b.data.order;
+      }
 
-    if (a.data.order != null) return -1;
-    if (b.data.order != null) return 1;
+      if (a.data.order != null) return -1;
+      if (b.data.order != null) return 1;
 
     return compareContentDatesDesc(a.data.date, b.data.date);
   });
+} catch (error) {
+  console.error("Error loading projects:", error);
+}
 
 function resolveProjectRepoUrl(repoUrl?: string) {
   if (!repoUrl) return undefined;

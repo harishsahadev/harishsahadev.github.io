@@ -19,11 +19,21 @@ export async function getStaticPaths() {
 }
 
 const { note: noteName, page } = Astro.params;
-const pageId = page === "index" ? `${noteName}/index` : `${noteName}/${page}`;
 const notes = await getCollection("notes", ({ data }) => !data.draft);
+
+const findPage = (slug: string) => {
+  const exactId = slug === "index" ? `${noteName}/index` : `${noteName}/${slug}`;
+  return (
+    notes.find((item) => item.id === exactId) ||
+    (slug === "index" ? notes.find((item) => item.id === noteName) : null) ||
+    null
+  );
+};
+
+const pageId = page === "index" ? `${noteName}/index` : `${noteName}/${page}`;
 // gather pages for this note and sort them
 const pagesForNote = notes
-  .filter((n) => n.id.startsWith(`${noteName}/`))
+  .filter((n) => n.id === noteName || n.id.startsWith(`${noteName}/`))
   .sort((a, b) => {
     const aNum = a.data.pageNumber ?? 999;
     const bNum = b.data.pageNumber ?? 999;
@@ -31,7 +41,7 @@ const pagesForNote = notes
     return a.id.localeCompare(b.id);
   });
 
-const current = notes.find((item) => item.id === pageId);
+const current = findPage(page);
 if (!current) {
   throw new Error(`Note not found: ${pageId}`);
 }

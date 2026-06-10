@@ -16,55 +16,61 @@ type NoteGroup = {
   pages: PageEntry[];
 };
 
-const notePages = await getCollection("notes", ({ data }) => !data.draft);
+let notes: any[] = [];
 
-const notesByRoot = notePages.reduce((map: Map<string, NoteGroup>, page) => {
-  const [root, ...rest] = page.id.split("/");
-  const pageSlug = rest.join("/") || "index";
-  const pageNumber = page.data.pageNumber ?? 999;
+try {
+  const notePages = await getCollection("notes", ({ data }) => !data.draft);
 
-  if (!map.has(root)) {
-    map.set(root, {
-      root,
-      pages: [],
-    });
-  }
+  const notesByRoot = notePages.reduce((map: Map<string, NoteGroup>, page) => {
+    const [root, ...rest] = page.id.split("/");
+    const pageSlug = rest.join("/") || "index";
+    const pageNumber = page.data.pageNumber ?? 999;
 
-  map.get(root)!.pages.push({
-    id: page.id,
-    slug: pageSlug,
-    title: page.data.title,
-    description: page.data.description,
-    pageNumber,
-    pubDate: page.data.pubDate,
-  });
-
-  return map;
-}, new Map());
-
-const notes = Array.from(notesByRoot.values()).map((note) => {
-  note.pages.sort((a: PageEntry, b: PageEntry) => {
-    if (a.pageNumber !== b.pageNumber) {
-      return a.pageNumber - b.pageNumber;
+    if (!map.has(root)) {
+      map.set(root, {
+        root,
+        pages: [],
+      });
     }
-    return a.id.localeCompare(b.id);
+
+    map.get(root)!.pages.push({
+      id: page.id,
+      slug: pageSlug,
+      title: page.data.title,
+      description: page.data.description,
+      pageNumber,
+      pubDate: page.data.pubDate,
+    });
+
+    return map;
+  }, new Map());
+
+  notes = Array.from(notesByRoot.values()).map((note) => {
+    note.pages.sort((a: PageEntry, b: PageEntry) => {
+      if (a.pageNumber !== b.pageNumber) {
+        return a.pageNumber - b.pageNumber;
+      }
+      return a.id.localeCompare(b.id);
+    });
+
+    const indexPage = note.pages.find((page: PageEntry) => page.slug === "index");
+    const childPages: PageEntry[] = indexPage ? note.pages.filter((page: PageEntry) => page.slug !== "index") : note.pages;
+    const rootPage = indexPage || note.pages[0];
+    const rootLink = indexPage ? `/notes/${note.root}` : `/notes/${note.root}/${note.pages[0].slug}`;
+
+    return {
+      ...note,
+      pages: childPages,
+      rootTitle: rootPage.title,
+      rootDescription: rootPage.description,
+      rootLink,
+      hasMultiplePages: childPages.length > 1,
+      hasIndexPage: Boolean(indexPage),
+    };
   });
-
-  const indexPage = note.pages.find((page: PageEntry) => page.slug === "index");
-  const childPages: PageEntry[] = indexPage ? note.pages.filter((page: PageEntry) => page.slug !== "index") : note.pages;
-  const rootPage = indexPage || note.pages[0];
-  const rootLink = indexPage ? `/notes/${note.root}` : `/notes/${note.root}/${note.pages[0].slug}`;
-
-  return {
-    ...note,
-    pages: childPages,
-    rootTitle: rootPage.title,
-    rootDescription: rootPage.description,
-    rootLink,
-    hasMultiplePages: childPages.length > 1,
-    hasIndexPage: Boolean(indexPage),
-  };
-});
+} catch (error) {
+  console.error("Error loading notes:", error);
+}
 ---
 
 <Base title="Notes" description="A collection of notes with multi-page entries stored in MD/MDX format.">
@@ -74,7 +80,7 @@ const notes = Array.from(notesByRoot.values()).map((note) => {
         <div class="notes-archive-label">Notes</div>
         <h1 class="notes-archive-title">Notes</h1>
         <p class="notes-archive-copy">
-          Notes are written as markdown or MDX files under <code>/src/content/notes</code>. Use nested folders to keep multiple pages together in one note.
+          These are my personal notes — a collection of thoughts, guides, and project drafts written as Markdown or MDX.
         </p>
       </header>
 
@@ -90,7 +96,13 @@ const notes = Array.from(notesByRoot.values()).map((note) => {
                         <h2>{note.rootTitle}</h2>
                         <p>{note.rootDescription}</p>
                       </div>
-                      <span class="notes-card-arrow" aria-hidden="true">▾</span>
+                      <span class="notes-card-arrow" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                          <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                          <polyline points="15 3 21 3 21 9"/>
+                          <line x1="10" x2="21" y1="14" y2="3"/>
+                        </svg>
+                      </span>
                     </div>
                   </a>
                 </summary>
@@ -171,6 +183,16 @@ const notes = Array.from(notesByRoot.values()).map((note) => {
     overflow: hidden;
   }
 
+  .notes-card {
+    transition: border-color var(--duration) var(--ease-out),
+                transform 300ms var(--ease-out);
+  }
+
+  .notes-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+
   .notes-card-details {
     width: 100%;
   }
@@ -218,12 +240,7 @@ const notes = Array.from(notesByRoot.values()).map((note) => {
   .notes-card-arrow {
     display: inline-flex;
     font-size: 1.25rem;
-    transform: rotate(0deg);
-    transition: transform 200ms ease;
-  }
-
-  details[open] .notes-card-arrow {
-    transform: rotate(180deg);
+    transition: transform 200ms ease, color var(--duration);
   }
 
   .notes-page-list {
