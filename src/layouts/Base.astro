@@ -90,6 +90,7 @@ const logoMark = `${SITE.firstName[0] ?? ""}${SITE.lastName[0] ?? ""}`.toUpperCa
           {!currentPath.startsWith("/projects") && <li><a href="/projects">Projects</a></li>}
           {!currentPath.startsWith("/blog") && <li><a href="/blog">Blog</a></li>}
           {!currentPath.startsWith("/certificates") && <li><a href="/certificates">Certs</a></li>}
+          {!currentPath.startsWith("/notes") && <li><a href="/notes">Notes</a></li>}
           <li><a href="/#contact">Contact</a></li>
         </ul>
 

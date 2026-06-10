@@ -1,0 +1,66 @@
+---
+import BlogPost from "../../../layouts/BlogPost.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes", ({ data }) => !data.draft);
+
+  return notes.map((note) => {
+    const [noteId, ...rest] = note.id.split("/");
+    const pageId = rest.join("/") || "index";
+    return {
+      params: {
+        note: noteId,
+        page: pageId,
+      },
+      props: { note },
+    };
+  });
+}
+
+const { note: noteName, page } = Astro.params;
+const pageId = page === "index" ? `${noteName}/index` : `${noteName}/${page}`;
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+// gather pages for this note and sort them
+const pagesForNote = notes
+  .filter((n) => n.id.startsWith(`${noteName}/`))
+  .sort((a, b) => {
+    const aNum = a.data.pageNumber ?? 999;
+    const bNum = b.data.pageNumber ?? 999;
+    if (aNum !== bNum) return aNum - bNum;
+    return a.id.localeCompare(b.id);
+  });
+
+const current = notes.find((item) => item.id === pageId);
+if (!current) {
+  throw new Error(`Note not found: ${pageId}`);
+}
+
+// find prev/next
+const idx = pagesForNote.findIndex((p) => p.id === pageId);
+const prevItem = idx > 0 ? pagesForNote[idx - 1] : null;
+const nextItem = idx >= 0 && idx < pagesForNote.length - 1 ? pagesForNote[idx + 1] : null;
+
+const makeHref = (item: { id: string }): string => {
+  const [, ...rest] = item.id.split("/");
+  const slug = rest.join("/") || "index";
+  return slug === "index" ? `/notes/${noteName}` : `/notes/${item.id}`;
+};
+
+const prev = prevItem ? { title: prevItem.data.title, href: makeHref(prevItem) } : null;
+const next = nextItem ? { title: nextItem.data.title, href: makeHref(nextItem) } : null;
+
+const { Content } = await render(current);
+---
+
+<BlogPost
+  title={current.data.title}
+  description={current.data.description}
+  pubDate={current.data.pubDate}
+  updatedDate={current.data.updatedDate}
+  tags={current.data.tags}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</BlogPost>

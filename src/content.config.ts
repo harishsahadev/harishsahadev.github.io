@@ -47,6 +47,30 @@ const projects = defineCollection({
   }),
 });
 
+// ─── Notes ────────────────────────────────────────────────────────────────────
+const notes = defineCollection({
+  loader: glob({
+    pattern: [
+      "**/*.md",
+      "**/*.mdx",
+      "!**/README.md",
+      "!**/README.mdx",
+      "!**/readme.md",
+      "!**/readme.mdx",
+    ],
+    base: "./src/content/notes",
+  }),
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    pubDate: z.coerce.date(),
+    updatedDate: z.coerce.date().optional(),
+    tags: z.array(z.string()).default([]),
+    pageNumber: z.number().int().positive().default(999),
+    draft: z.boolean().default(false),
+  }),
+});
+
 // ─── Certifications ───────────────────────────────────────────────────────────
 const certifications = defineCollection({
   loader: glob({ pattern: "**/*.{yaml,yml,json}", base: "./src/content/certifications" }),
@@ -73,4 +97,4 @@ const certifications = defineCollection({
   }),
 });
 
-export const collections = { blog, projects, certifications };
+export const collections = { blog, projects, certifications, notes };

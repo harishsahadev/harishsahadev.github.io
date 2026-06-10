@@ -11,9 +11,11 @@ interface Props {
   readingTime?: number;
   cover?: string;
   coverAlt?: string;
+  prev?: { title: string; href: string } | null;
+  next?: { title: string; href: string } | null;
 }
 
-const { title, description, pubDate, updatedDate, tags, readingTime, cover, coverAlt } =
+const { title, description, pubDate, updatedDate, tags, readingTime, cover, coverAlt, prev, next } =
   Astro.props;
 
 const formattedPub = pubDate.toLocaleDateString("en-US", {
@@ -82,6 +84,22 @@ const hasGiscus =
         <slot />
       </div>
     </article>
+
+    <!-- Prev / Next fixed navigation -->
+    { (prev || next) && (
+      <nav class="post-nav" aria-label="Post navigation">
+        {prev && (
+          <a class="post-nav-btn post-nav-prev" href={prev.href} rel="prev">
+            ← {prev.title}
+          </a>
+        )}
+        {next && (
+          <a class="post-nav-btn post-nav-next" href={next.href} rel="next">
+            {next.title} →
+          </a>
+        )}
+      </nav>
+    ) }
 
     <!-- Giscus comments -->
     {hasGiscus && (
@@ -225,5 +243,40 @@ const hasGiscus =
     font-size: 1.375rem;
     margin-bottom: var(--space-8);
     color: var(--text);
+  }
+
+  /* ─── Prev / Next fixed nav ─────────────────────────────────────────────── */
+  .post-nav {
+    position: fixed;
+    left: 50%;
+    bottom: clamp(1rem, 2.5vw, 1.5rem);
+    transform: translateX(-50%);
+    display: flex;
+    gap: var(--space-3);
+    align-items: center;
+    z-index: 120;
+    pointer-events: auto;
+  }
+
+  .post-nav-btn {
+    background: color-mix(in srgb, var(--bg) 85%, var(--bg-card));
+    border: 1px solid var(--border);
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-pill);
+    color: var(--text);
+    text-decoration: none;
+    font-size: 0.95rem;
+    box-shadow: 0 1px 0 rgba(0,0,0,0.02);
+    transition: transform 120ms ease, border-color 120ms ease;
+  }
+
+  .post-nav-btn:hover {
+    transform: translateY(-2px);
+    border-color: var(--accent);
+  }
+
+  @media (max-width: 640px) {
+    .post-nav { gap: 0.5rem; }
+    .post-nav-btn { padding: 0.4rem 0.6rem; font-size: 0.85rem; }
   }
 </style>

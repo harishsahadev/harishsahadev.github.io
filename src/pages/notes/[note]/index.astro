@@ -1,0 +1,68 @@
+---
+import BlogPost from "../../../layouts/BlogPost.astro";
+import { getCollection, render } from "astro:content";
+
+export async function getStaticPaths() {
+  const notes = await getCollection("notes", ({ data }) => !data.draft);
+
+  // only include roots that have an index page
+  const roots = new Set(notes.map((n) => n.id.split("/")[0]));
+
+  return Array.from(roots).map((root) => ({ params: { note: root } }));
+}
+
+const { note: noteName } = Astro.params;
+const notes = await getCollection("notes", ({ data }) => !data.draft);
+
+const pageId = `${noteName}/index`;
+let current = notes.find((item) => item.id === pageId) || null;
+
+// gather pages for this note and sort them
+const pagesForNote = notes
+  .filter((n) => n.id.startsWith(`${noteName}/`))
+  .sort((a, b) => {
+    const aNum = a.data.pageNumber ?? 999;
+    const bNum = b.data.pageNumber ?? 999;
+    if (aNum !== bNum) return aNum - bNum;
+    return a.id.localeCompare(b.id);
+  });
+
+// If index page is missing, fall back to `introduction` or the first page
+if (!current) {
+  const introId = `${noteName}/introduction`;
+  const intro = notes.find((item) => item.id === introId) || null;
+  current = intro || pagesForNote[0] || null;
+}
+
+if (!current) {
+  throw new Error(`No pages found for note: ${noteName}`);
+}
+
+const currentId = current.id;
+const idx = pagesForNote.findIndex((p) => p.id === currentId);
+const prevItem = idx > 0 ? pagesForNote[idx - 1] : null;
+const nextItem = idx >= 0 && idx < pagesForNote.length - 1 ? pagesForNote[idx + 1] : null;
+
+const makeHref = (item: { id: string }): string => {
+  const [root, ...rest] = item.id.split("/");
+  const slug = rest.join("/") || "index";
+  return slug === "index" ? `/notes/${root}` : `/notes/${item.id}`;
+};
+
+const prev = prevItem ? { title: prevItem.data.title, href: makeHref(prevItem) } : null;
+const next = nextItem ? { title: nextItem.data.title, href: makeHref(nextItem) } : null;
+
+const { Content } = await render(current);
+---
+
+<BlogPost
+  title={current.data.title}
+  description={current.data.description}
+  pubDate={current.data.pubDate}
+  updatedDate={current.data.updatedDate}
+  tags={current.data.tags}
+  prev={prev}
+  next={next}
+>
+  <Content />
+</BlogPost>

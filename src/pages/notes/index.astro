@@ -1,0 +1,271 @@
+---
+import Base from "../../layouts/Base.astro";
+import { getCollection } from "astro:content";
+
+type PageEntry = {
+  id: string;
+  slug: string;
+  title: string;
+  description: string;
+  pageNumber: number;
+  pubDate: Date;
+};
+
+type NoteGroup = {
+  root: string;
+  pages: PageEntry[];
+};
+
+const notePages = await getCollection("notes", ({ data }) => !data.draft);
+
+const notesByRoot = notePages.reduce((map: Map<string, NoteGroup>, page) => {
+  const [root, ...rest] = page.id.split("/");
+  const pageSlug = rest.join("/") || "index";
+  const pageNumber = page.data.pageNumber ?? 999;
+
+  if (!map.has(root)) {
+    map.set(root, {
+      root,
+      pages: [],
+    });
+  }
+
+  map.get(root)!.pages.push({
+    id: page.id,
+    slug: pageSlug,
+    title: page.data.title,
+    description: page.data.description,
+    pageNumber,
+    pubDate: page.data.pubDate,
+  });
+
+  return map;
+}, new Map());
+
+const notes = Array.from(notesByRoot.values()).map((note) => {
+  note.pages.sort((a: PageEntry, b: PageEntry) => {
+    if (a.pageNumber !== b.pageNumber) {
+      return a.pageNumber - b.pageNumber;
+    }
+    return a.id.localeCompare(b.id);
+  });
+
+  const indexPage = note.pages.find((page: PageEntry) => page.slug === "index");
+  const childPages: PageEntry[] = indexPage ? note.pages.filter((page: PageEntry) => page.slug !== "index") : note.pages;
+  const rootPage = indexPage || note.pages[0];
+  const rootLink = indexPage ? `/notes/${note.root}` : `/notes/${note.root}/${note.pages[0].slug}`;
+
+  return {
+    ...note,
+    pages: childPages,
+    rootTitle: rootPage.title,
+    rootDescription: rootPage.description,
+    rootLink,
+    hasMultiplePages: childPages.length > 1,
+    hasIndexPage: Boolean(indexPage),
+  };
+});
+---
+
+<Base title="Notes" description="A collection of notes with multi-page entries stored in MD/MDX format.">
+  <section class="notes-archive">
+    <div class="container">
+      <header class="notes-archive-header">
+        <div class="notes-archive-label">Notes</div>
+        <h1 class="notes-archive-title">Notes</h1>
+        <p class="notes-archive-copy">
+          Notes are written as markdown or MDX files under <code>/src/content/notes</code>. Use nested folders to keep multiple pages together in one note.
+        </p>
+      </header>
+
+      <div class="notes-archive-list">
+        {notes.map((note) => (
+          <article class="notes-card">
+            {note.hasMultiplePages ? (
+              <details class="notes-card-details">
+                <summary class="notes-card-summary">
+                  <a class="notes-card-summary-link" href={note.rootLink}>
+                    <div class="notes-card-summary-body">
+                      <div>
+                        <h2>{note.rootTitle}</h2>
+                        <p>{note.rootDescription}</p>
+                      </div>
+                      <span class="notes-card-arrow" aria-hidden="true">▾</span>
+                    </div>
+                  </a>
+                </summary>
+
+                <ul class="notes-page-list" role="list">
+                  {note.pages.map((page: PageEntry) => (
+                    <li>
+                      <a
+                        href={page.slug === "index" ? `/notes/${note.root}` : `/notes/${page.id}`}
+                        class="notes-page-link"
+                      >
+                        <strong>{page.title}</strong>
+                        <span>{page.description}</span>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </details>
+            ) : (
+              <a class="notes-card-link" href={note.rootLink}>
+                <div class="notes-card-summary-body single">
+                  <div>
+                    <h2>{note.rootTitle}</h2>
+                    <p>{note.rootDescription}</p>
+                  </div>
+                </div>
+              </a>
+            )}
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .notes-archive {
+    padding-top: clamp(2.5rem, 5vw, 4rem);
+    padding-bottom: clamp(4rem, 8vw, 6rem);
+  }
+
+  .notes-archive-header {
+    max-width: 42rem;
+    margin-bottom: var(--space-12);
+  }
+
+  .notes-archive-label {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: var(--space-3);
+  }
+
+  .notes-archive-title {
+    font-family: var(--font-serif);
+    font-size: clamp(2.25rem, 5vw, 3.5rem);
+    line-height: 1.1;
+    margin-bottom: var(--space-4);
+  }
+
+  .notes-archive-copy {
+    max-width: 38rem;
+    color: var(--text-muted);
+    line-height: 1.8;
+  }
+
+  .notes-archive-list {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  .notes-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-xl);
+    background: var(--bg-card);
+    overflow: hidden;
+  }
+
+  .notes-card-details {
+    width: 100%;
+  }
+
+  .notes-card-summary {
+    display: block;
+    padding: var(--space-6);
+    cursor: pointer;
+    list-style: none;
+  }
+
+  .notes-card-summary-link,
+  .notes-card-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .notes-card-summary-body {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+  }
+
+  .notes-card-summary-body.single {
+    padding: var(--space-6);
+  }
+
+  .notes-card-summary-body h2,
+  .notes-card-summary-body p {
+    margin: 0;
+  }
+
+  .notes-card-summary-body h2 {
+    font-family: var(--font-serif);
+    font-size: 1.35rem;
+  }
+
+  .notes-card-summary-body p {
+    color: var(--text-muted);
+    line-height: 1.75;
+  }
+
+  .notes-card-arrow {
+    display: inline-flex;
+    font-size: 1.25rem;
+    transform: rotate(0deg);
+    transition: transform 200ms ease;
+  }
+
+  details[open] .notes-card-arrow {
+    transform: rotate(180deg);
+  }
+
+  .notes-page-list {
+    margin: 0;
+    padding: 0 var(--space-6) var(--space-6);
+    list-style: none;
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  .notes-card-link {
+    display: block;
+    padding: var(--space-6);
+  }
+
+  .notes-page-link {
+    display: grid;
+    gap: 0.25rem;
+    padding: var(--space-4);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--duration), border-color var(--duration);
+  }
+
+  .notes-page-link:hover {
+    border-color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 6%, var(--bg-card));
+  }
+
+  .notes-page-link strong {
+    display: block;
+    font-size: 1rem;
+  }
+
+  .notes-page-link span {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+  }
+
+  summary::-webkit-details-marker {
+    display: none;
+  }
+</style>
