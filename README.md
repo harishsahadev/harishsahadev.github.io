@@ -21,6 +21,14 @@ Open `http://localhost:4321` to preview locally.
 - Custom `sitemap.xml` route for dev and production
 - Responsive layout with theme toggle and simple site interactions
 
+## Features overview
+
+- Static portfolio site built with Astro and custom CSS
+- Content-driven project, certification, blog, and notes pages
+- Dynamic RSS feed and sitemap generation
+- Responsive navigation and mobile-friendly design
+- Easy local development with `npm run dev`
+
 ## Useful commands
 
 | Command           | Action                                |

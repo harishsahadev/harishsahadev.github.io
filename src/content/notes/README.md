@@ -30,7 +30,10 @@ tags:
 
 ## Page ordering
 
-Notes are grouped by folder. Pages inside a note are ordered by `pageNumber`. If two pages have the same number, they fall back to alphabetical order.
+Notes are grouped by folder. Pages inside a note are ordered by `pageNumber` ascending. If two pages have the same number, they fall back to alphabetical order by file name.
+
+- If a note folder contains `index.md` or `index.mdx`, that page becomes the root note entry at `/notes/<note-name>`.
+- If there is no `index` page, the first sorted page becomes the root note link.
 
 ## Root note page
 
