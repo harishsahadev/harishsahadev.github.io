@@ -1,0 +1,9 @@
+name: "Minor in Cloud Computing for AI"
+issuer: "Indian Institute of Technology, Madras"
+date: "2026-05-15"
+order: 1
+tags: ["Cloud Computing", "Deep Learning", "Big Data", "MLOps", "Artificial Intelligence"]
+verifyUrl: "https://ds.study.iitm.ac.in/document_verification/c98c38bd947bbf04f46661c881af4f6e23e5be7c5f4a0c03b47f5924293f5fcb"
+badge: "/images/certs/minor-cloud-computing-ai-iitm.png"
+description: "Minor credential in Cloud Computing for AI from the IIT Madras BS Degree Program."
+detailedDescription: "Awarded the Minor in Cloud Computing for AI from the IIT Madras BS Degree Program after successfully completing the required coursework, including Introduction to Big Data, Deep Learning Practice, and MLOps. The program provides practical knowledge of scalable AI systems, cloud-native machine learning workflows, distributed data processing, and modern MLOps practices for deploying and managing AI applications."
